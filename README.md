@@ -1,0 +1,54 @@
+# MathMed
+
+## Introduction
+This is a desktop game built on Python to improve your mental calculation speed through timed challenge.
+
+## Feature
+Currently in early development. Core mechanics are under implementation.
+
+## Roadmap
+* Proposed
+- Randomised question generator (+, −, ×, ÷) based on difficulty
+- Division questions always produce whole numbers
+- Fully customisable difficulty levels
+- Streak system with optional adaptive difficulty scaling
+
+* Future plans
+- GUI Framework using CustomTkinter for a better experience
+- Game modes for different and engaging gameplay, such as Timed Challenge, or Endless questions
+- Performance summary after each game
+- Telemetry data, such as accuracy %, time per question, etc.
+- Local user profile and session system
+- Telemetry data report
+
+## Installation
+In order to create a copy of this repository, you need
+- a computer
+- Python 3.10 or later
+- A Python IDE
+
+1. Clone this repository
+2. Create a venv (Virtual Environment) (Commands are available below)
+3. Run the following commands in your terminal from the project directory:
+
+```
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python main.py
+```
+
+## Project Structure
+module/
+│
+├── core/   # Core logic (question generation, difficulty, streak system)
+├── gui/    # GUI implementation
+│
+main.py     # Entry point
+
+## Disclaimer
+This project is developed in my spare time. Updates may be gradual as I have other commitments and this is only a personal project, I hope you understand :D
+
+Thank you and good luck coding!
+
+@1ampupa 05 Mar 2026
