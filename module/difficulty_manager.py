@@ -5,5 +5,5 @@ class DifficultyManager:
         Operator.ADDITION: (0, 10),
         Operator.SUBTRACTION: (0, 10),
         Operator.MULTIPLICATION: (0, 10),
-        Operator.DIVISION: (1, 10),
+        Operator.DIVISION: (0, 10),
     }

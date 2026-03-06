@@ -1,7 +1,7 @@
 from module.quiz import Quiz
 from module.operator import Operator
 
-Quiz.debug_mode = True
+Quiz.debug_mode = False
 
 quiz1 = Quiz.generate(Operator.ADDITION)
 print(quiz1)
