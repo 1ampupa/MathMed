@@ -1,13 +1,11 @@
 from module.operator import Operator
 from module.difficulty_manager import DifficultyManager
-from random import randint
+from module.quiz_validator import QuizValidator
+from random import randint, choice
 
 class Quiz():
     # Debug Mode
     debug_mode = False
-
-    # Modifier
-    allow_negative_subtraction_answer = False
 
     # Quiz number and Quizzes (Reset on startup and every game session)
     quiz_number: int = 1
@@ -28,20 +26,21 @@ class Quiz():
     def generate(cls, operator: Operator) -> Quiz:
         min_value, max_value = DifficultyManager.BASE[operator]
         
-        # TODO Difficulty Modifier
-        
-        if operator is Operator.SUBTRACTION and not cls.allow_negative_subtraction_answer:
-            a = randint(min_value, max_value)
-            b = randint(min_value, a)   
-        elif operator is Operator.DIVISION:
-            b = randint(min_value, max_value)
-            answer = randint(min_value, max_value)
-            a = b * answer
-        else:
+        for _ in range(100): # 100 damn attempts so please work ty :D
             a = randint(min_value, max_value)
             b = randint(min_value, max_value)
 
-        return cls(a, b, operator)
+            # Generate direct divisible question for division
+            if operator is Operator.DIVISION:
+                dividend = a * b
+                divisor = choice([a,b])
+                a = dividend
+                b = divisor
+
+            if QuizValidator.validate_quiz(a, b, operator):
+                return cls(a, b, operator)
+
+        raise Exception("No valid quiz generated under this circumstance.")
 
     # Getter Methods
 

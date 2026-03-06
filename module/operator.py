@@ -3,8 +3,8 @@ from enum import Enum, auto
 class Operator(Enum):
     ADDITION = "+"
     SUBTRACTION = "-"
-    MULTIPLICATION = "*"
-    DIVISION = "/"
+    MULTIPLICATION = "×"
+    DIVISION = "÷"
 
     def apply(self: Operator, a: int, b: int) -> int:
         if self is Operator.ADDITION:
