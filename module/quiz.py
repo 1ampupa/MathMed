@@ -24,7 +24,11 @@ class Quiz():
     # Quiz Generator
     @classmethod
     def generate(cls, operator: Operator) -> Quiz:
-        min_value, max_value = DifficultyManager.BASE[operator]
+        min_value = DifficultyManager.LOWEST_MINIMUM
+        max_value = DifficultyManager.MODIFIER[operator]
+
+        if min_value is None or max_value is None:
+            raise ValueError(f"Min or Max Value for {operator} cannot be NoneType")
         
         for _ in range(100): # 100 damn attempts so please work ty :D
             a = randint(min_value, max_value)
