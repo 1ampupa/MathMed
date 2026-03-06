@@ -1,17 +1,20 @@
 from module.operator import Operator
 from module.quiz import Quiz
-from module.difficulty_manager import DifficultyManager
+from module.user_answer import User
+from module.user_answer import UserAnswer
 
 Quiz.debug_mode = False
 
-quiz1 = Quiz.generate(Operator.ADDITION)
-print(quiz1)
-quiz2 = Quiz.generate(Operator.SUBTRACTION)
-print(quiz2)
-quiz3 = Quiz.generate(Operator.MULTIPLICATION)
-print(quiz3)
-quiz4 = Quiz.generate(Operator.DIVISION)
-print(quiz4)
+user = User("Test User")
 
-# for _ in range(100):
-# DifficultyManager.modify_difficulty(Operator.ADDITION, True)
+print(f"Hi, {user.name}!")
+while True:
+    quiz = Quiz.generate(Operator.ADDITION)
+    print(quiz)
+
+    answer = int(input("Answer for world peace: "))
+
+    result = UserAnswer(user, quiz, answer)
+
+    print(result)
+    # print(user.difficulty_chart[quiz.operator])

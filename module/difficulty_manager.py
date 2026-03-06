@@ -20,7 +20,11 @@ class DifficultyManager:
     }
 
     @classmethod
-    def modify_difficulty(cls, operator: Operator, increase: bool) -> None:
+    def set_difficulty_from_user(cls, chart: dict) -> None:
+        cls.MODIFIER = chart
+
+    @classmethod
+    def modify_difficulty(cls, operator: Operator, increase: bool) -> dict[Operator, int]:
         operator_max = cls.MODIFIER[operator]
         if operator not in cls.MODIFIER: raise ValueError(f"No such difficulty for this operator {operator}")
         operator_max += cls.INCREASE_RATE if increase else - cls.DECREASE_RATE
@@ -32,4 +36,4 @@ class DifficultyManager:
 
         cls.MODIFIER[operator] = operator_max
 
-        print(operator_max)
+        return cls.MODIFIER
