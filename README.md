@@ -41,6 +41,7 @@ python main.py
 ```
 
 ## Project Structure
+```
 module/
 |- difficulty_manager.py    Handle Difficulty optimistiser algorithm
 |- operator.py              Store Arithmetic operators enums
@@ -50,6 +51,7 @@ module/
 |- user_answer.py           Receive, check user answer
 |- user.py                  Handle User
 main.py     # Entry point
+```
 
 ## Disclaimer
 This project is developed in my spare time. Updates may be gradual as I have other commitments and this is only a personal project, I hope you understand :D
