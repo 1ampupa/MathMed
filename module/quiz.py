@@ -1,6 +1,7 @@
 from module.operator import Operator
 from module.difficulty_manager import DifficultyManager
 from module.quiz_validator import QuizValidator
+from module.user import User
 from random import randint, choice
 
 class Quiz():
@@ -23,9 +24,9 @@ class Quiz():
 
     # Quiz Generator
     @classmethod
-    def generate(cls, operator: Operator) -> Quiz:
+    def generate(cls, user: User, operator: Operator) -> Quiz:
         min_value = DifficultyManager.LOWEST_MINIMUM
-        max_value = DifficultyManager.MODIFIER[operator]
+        max_value = user.difficulty_chart[operator]
 
         if min_value is None or max_value is None:
             raise ValueError(f"Min or Max Value for {operator} cannot be NoneType")

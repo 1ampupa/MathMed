@@ -15,3 +15,4 @@ class Operator(Enum):
             return a * b
         elif self is Operator.DIVISION:
             return int(a / b)
+        
