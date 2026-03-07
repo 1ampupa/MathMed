@@ -4,12 +4,14 @@
 This is a desktop game built on Python to improve your mental calculation speed through timed challenge.
 
 ## Feature
-Currently in early development. Core mechanics are under implementation.
+Currently in early development. Some core mechanics are under implementation.
+- Randomised question generator (+, −, ×, ÷) based on difficulty
+- Division questions always produce whole numbers
+- Basic Local User profile
+
 
 ## Roadmap
 * Proposed
-- Randomised question generator (+, −, ×, ÷) based on difficulty
-- Division questions always produce whole numbers
 - Fully customisable difficulty levels
 - Streak system with optional adaptive difficulty scaling
 
@@ -18,7 +20,7 @@ Currently in early development. Core mechanics are under implementation.
 - Game modes for different and engaging gameplay, such as Timed Challenge, or Endless questions
 - Performance summary after each game
 - Telemetry data, such as accuracy %, time per question, etc.
-- Local user profile and session system
+- Session system and Save/Load system
 - Telemetry data report
 
 ## Installation
@@ -40,10 +42,13 @@ python main.py
 
 ## Project Structure
 module/
-│
-├── core/   # Core logic (question generation, difficulty, streak system)
-├── gui/    # GUI implementation
-│
+|- difficulty_manager.py    Handle Difficulty optimistiser algorithm
+|- operator.py              Store Arithmetic operators enums
+|- quiz_modifier.py         Configuration for the pattern of the quiz
+|- quiz_validator.py        Handle validation of the quiz before sending it to user
+|- quiz.py                  Handle Quiz object
+|- user_answer.py           Receive, check user answer
+|- user.py                  Handle User
 main.py     # Entry point
 
 ## Disclaimer
