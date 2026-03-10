@@ -31,15 +31,14 @@ class Quiz():
         if len(cls.recent_ten_operands_set) > 10:
             cls.recent_ten_operands_set.pop()
 
-        min_value = DifficultyManager.LOWEST_MINIMUM
         max_value = user.difficulty_chart[operator]
 
-        if min_value is None or max_value is None:
+        if max_value is None:
             raise ValueError(f"Min or Max Value for {operator} cannot be NoneType")
         
         for _ in range(100): # 100 damn attempts so please work ty :D
-            a = randint(min_value, max_value)
-            b = randint(min_value, max_value)
+            a = randint(max(1, (max_value//3)), max_value)
+            b = randint(max(1, (max_value//3)), max_value)
 
             # Check for repeating numbers set
             if (a,b) in cls.recent_ten_operands_set:

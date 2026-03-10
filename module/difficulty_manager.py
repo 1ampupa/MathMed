@@ -4,7 +4,6 @@ class DifficultyManager:
 
     # Constants
 
-    LOWEST_MINIMUM: int = 0
     LOWEST_MAXIMUM: int = 5
     HIGHEST_MAXIMUM: dict[Operator, int] = {
         Operator.ADDITION: 100,
