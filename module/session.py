@@ -1,3 +1,5 @@
+from module.operator import Operator
+
 class Session:
     session_id_counter = 1
 
@@ -33,4 +35,31 @@ class Session:
             self.active_user.current_session = None
         self.active_user = None
         print(f"Ended session {self.id}")
-        del self
+
+    def start(self):
+        if self.active_user is None:
+            print("Cannot start a session without any user.")
+            return
+        
+        from module.quiz import Quiz
+        from module.user_answer import UserAnswer
+        
+        while True:
+            quiz = Quiz.generate(self.active_user, Operator.MULTIPLICATION)
+            print(quiz)
+
+            answer = input("Answer for world peace: ")
+            if answer.strip().lower() == 'q':
+                self.disconnect_user()
+                print("You quit the game. Thanks for saving world peace.")
+                break
+            
+            try:
+                result = UserAnswer(self.active_user, quiz, int(answer))
+            except ValueError:
+                print("Invalid input, please answer the question using only numbers.")
+                continue
+            result.update_difficulty()
+
+            print(f"{result}! The answer is {result.quiz.answer}.\n")
+    
