@@ -27,11 +27,11 @@ class Session:
             return
         self.active_user = user
         user.current_session = self
-        print(f"{user.name} added to the session {self.id}")
+        print(f"Connecting {user.name} to the session {self.id}")
 
     def disconnect_user(self):
         if self.active_user is not None:
-            print(f"{self.active_user.name} is being disconnected from session {self.id}.")
+            print(f"Disconnecting {self.active_user.name} from session {self.id}.")
             self.active_user.current_session = None
         self.active_user = None
         print(f"Ended session {self.id}")
@@ -43,7 +43,10 @@ class Session:
         
         from module.quiz import Quiz
         from module.user_answer import UserAnswer
+
         
+        print("Session is ready!\nAnswer the questions correctly.\n")
+
         while True:
             quiz = Quiz.generate(self.active_user, Operator.MULTIPLICATION)
             print(quiz)

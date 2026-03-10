@@ -10,6 +10,4 @@ print(f"Hi, {user.name}!")
 
 session = Session()
 session.connect_user(user)
-
-print("Session is ready!\nAnswer the questions correctly.\n")
 session.start()
