@@ -39,11 +39,11 @@ class Session:
             if self.question_answered != 0:
                 self.accuracy_percentage = round((self.correct_answer / self.question_answered) * 100)
                 self.average_time_per_question = self.time_elasped / self.question_answered
+                # Creating telemetry summary report
+                self.summarise_telemetry()
             else:
-                self.accuracy_percentage = 0
-                self.average_time_per_question = 0  
-            # Creating telemetry summary report
-            self.summarise_telemetry()
+                print("Session abandoned; No summary report generated.")
+            
             print(f"Disconnecting {self.active_user.name} from session {self.id}.")
             self.active_user.current_session = None
         self.active_user = None
@@ -126,7 +126,9 @@ class Session:
             print(
                 f"{"="*50}\n"
                 f"Session Summary Report for session {self.id}\n",
-                f"User: {self.active_user.name}\n{self.points} Points!\nTime elapsed: {self.time_elasped:.2f} seconds\n\n"
+                f"User: {self.active_user.name}\n",
+                f"{self.points} Points!\n",
+                f"Time elapsed: {self.time_elasped:.2f} seconds\n\n",
                 f"Question answered: {self.question_answered}\n",
                 f"Accuracy: {self.accuracy_percentage} % ({self.correct_answer}/{self.question_answered})\n",
                 f"Max streak: {self.max_correct_streak}\n",
