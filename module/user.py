@@ -17,6 +17,7 @@ class User:
         }
 
     # Difficulty
-    def update_difficulty(self, operator: Operator, increase: bool) -> None:
-        self.difficulty_chart = DifficultyManager.modify_difficulty(
+    def update_difficulty(self, operator: Operator, increase: bool) -> int:
+        difficulty = self.difficulty_chart = DifficultyManager.modify_difficulty(
             self.difficulty_chart, operator, increase)
+        return difficulty[operator]

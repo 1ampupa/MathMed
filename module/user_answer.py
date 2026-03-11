@@ -1,4 +1,4 @@
-from module.operator import Operator
+from module.difficulty_manager import DifficultyManager
 from module.user import User
 from module.quiz import Quiz
 
@@ -8,26 +8,27 @@ class UserAnswer:
         self.quiz = quiz
         self.answer = user_answer
 
-    @property
-    def result(self) -> str:
-        return "Correct" if self.answer == self.quiz.answer else "Incorrect"
+    @property # Return a boolean result
+    def is_correct(self) -> bool: return True if self.answer == self.quiz.answer else False
     
-    @property
-    def is_correct(self) -> bool:
-        return True if self.answer == self.quiz.answer else False
+    @property # Return a readable result
+    def result(self) -> str: return "Correct" if self.is_correct else "Incorrect"
+       
         
-    def update_difficulty(self) -> bool:
-        if self.quiz.operator == Operator.ADDITION or self.quiz.operator == Operator.SUBTRACTION:
-            if self.quiz.quiz_number % 3 == 0:
-                increase = True if self.answer == self.quiz.answer else False
-                self.user.update_difficulty(self.quiz.operator, increase)
-                return True
-        elif self.quiz.operator == Operator.MULTIPLICATION or self.quiz.operator == Operator.DIVISION:
+    def update_difficulty(self) -> None:
+        if self.user.current_session is not None:
+            # Update difficulty every 5 quiz based on overall accuracy and recent performance
             if self.quiz.quiz_number % 5 == 0:
-                increase = True if self.answer == self.quiz.answer else False
-                self.user.update_difficulty(self.quiz.operator, increase)
-                return True
-        return False
-
+                if (
+                    self.user.current_session.accuracy_percentage >= 
+                    DifficultyManager.MINIMUM_ACCURACY_PERCENTAGE_INCREASE
+                and (sum(self.user.current_session.five_recent_answer_results)) * 20 >= # * 20 to make it percentage
+                    DifficultyManager.MINIMUM_ACCURACY_PERCENTAGE_INCREASE
+                ):
+                    difficulty = self.user.update_difficulty(self.quiz.operator, True)
+                    print(f"Quiz difficulty is now increased. Now {difficulty}/{DifficultyManager.HIGHEST_MAXIMUM[self.quiz.operator]}")
+                else:
+                    difficulty = self.user.update_difficulty(self.quiz.operator, False)
+                    print(f"Quiz difficulty is now decreased. Now {difficulty}/{DifficultyManager.HIGHEST_MAXIMUM[self.quiz.operator]}")
     def __str__(self) -> str:
         return self.result
