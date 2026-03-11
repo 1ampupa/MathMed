@@ -7,21 +7,20 @@ This is a desktop game built on Python to improve your mental calculation speed 
 Currently in early development. Some core mechanics are under implementation.
 - Randomised question generator (+, −, ×, ÷) based on difficulty
 - Division questions always produce whole numbers
-- Basic Local User profile
-
+- Basic Local User profile and session system
+- Streak system with adaptive difficulty scaling
+- Performance summary after each game
+- Telemetry data, such as accuracy %, time per question, etc.
+- Telemetry data report
 
 ## Roadmap
 * Proposed
 - Fully customisable difficulty levels
-- Streak system with optional adaptive difficulty scaling
+- GUI Framework using CustomTkinter for a better experience
 
 * Future plans
-- GUI Framework using CustomTkinter for a better experience
 - Game modes for different and engaging gameplay, such as Timed Challenge, or Endless questions
-- Performance summary after each game
-- Telemetry data, such as accuracy %, time per question, etc.
-- Session system and Save/Load system
-- Telemetry data report
+- User Save/Load system
 
 ## Installation
 In order to create a copy of this repository, you need

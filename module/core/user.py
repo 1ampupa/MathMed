@@ -1,6 +1,6 @@
-from module.operator import Operator
-from module.difficulty_manager import DifficultyManager
-from module.session import Session
+from module.core.operator import Operator
+from module.core.difficulty_manager import DifficultyManager
+from module.core.session import Session
 
 class User:
     def __init__(self, name: str) -> None:

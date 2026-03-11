@@ -1,5 +1,5 @@
 import time
-from module.operator import Operator
+from module.core.operator import Operator
 
 class Session:
     session_id_counter = 1
@@ -57,8 +57,8 @@ class Session:
             print("Cannot start a session without any user.")
             return
         
-        from module.quiz import Quiz
-        from module.user_answer import UserAnswer
+        from module.core.quiz import Quiz
+        from module.core.user_answer import UserAnswer
 
         print("Session is ready!\nAnswer the questions correctly.\n")
 

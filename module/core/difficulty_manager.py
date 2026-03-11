@@ -1,4 +1,4 @@
-from module.operator import Operator
+from module.core.operator import Operator
 
 class DifficultyManager:
 

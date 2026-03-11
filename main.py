@@ -1,7 +1,7 @@
-from module.operator import Operator
-from module.user import User
-from module.session import Session
-from module.quiz import Quiz
+from module.core.operator import Operator
+from module.core.user import User
+from module.core.session import Session
+from module.core.quiz import Quiz
 
 # Debug Mode for each script
 Quiz.debug_mode = False # Show quiz answer if true

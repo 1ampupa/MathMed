@@ -1,5 +1,5 @@
-from module.operator import Operator
-from module.quiz_modifier import QuizModifier
+from module.core.operator import Operator
+from module.core.quiz_modifier import QuizModifier
 
 class QuizValidator:
 

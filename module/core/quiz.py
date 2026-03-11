@@ -1,8 +1,8 @@
 from random import randint, choice
 
-from module.operator import Operator
-from module.quiz_validator import QuizValidator
-from module.user import User
+from module.core.operator import Operator
+from module.core.quiz_validator import QuizValidator
+from module.core.user import User
 
 class Quiz():
     # Debug Mode (Show answer in the question)

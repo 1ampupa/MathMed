@@ -1,4 +1,4 @@
-from module.user import User
+from module.core.user import User
 
 class UserTelemetry:
     def __init__(self, user: User) -> None:
