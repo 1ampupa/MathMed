@@ -42,13 +42,16 @@ python main.py
 ## Project Structure
 ```
 module/
-|- difficulty_manager.py    Handle Difficulty optimistiser algorithm
-|- operator.py              Store Arithmetic operators enums
-|- quiz_modifier.py         Configuration for the pattern of the quiz
-|- quiz_validator.py        Handle validation of the quiz before sending it to user
-|- quiz.py                  Handle Quiz object
-|- user_answer.py           Receive, check user answer
-|- user.py                  Handle User
+|- core
+    |- difficulty_manager.py    Handle Difficulty optimistiser algorithm
+    |- operator.py              Store Arithmetic operators enums
+    |- quiz_modifier.py         Configuration for the pattern of the quiz
+    |- quiz_validator.py        Handle validation of the quiz before sending it to user
+    |- quiz.py                  Handle Quiz object
+    |- session.py               Handle Game session
+    |- user_answer.py           Receive, check user answer
+    |- user_telemetry.py        Handle user telemetry data for save/load system
+    |- user.py                  Handle User
 main.py     # Entry point
 ```
 
