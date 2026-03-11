@@ -16,3 +16,10 @@ class Operator(Enum):
         elif self is Operator.DIVISION:
             return int(a / b)
         
+    def readable_operator(self) -> str:
+        match self:
+            case Operator.ADDITION: return Operator.ADDITION.value
+            case Operator.SUBTRACTION: return Operator.SUBTRACTION.value
+            case Operator.MULTIPLICATION: return Operator.MULTIPLICATION.value
+            case Operator.DIVISION: return Operator.DIVISION.value
+            case _: raise RuntimeError("No operator for this session")

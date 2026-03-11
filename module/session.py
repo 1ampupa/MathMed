@@ -4,29 +4,33 @@ from module.operator import Operator
 class Session:
     session_id_counter = 1
 
-    def __init__(self) -> None:
+    def __init__(self, operator: Operator) -> None:
         self.id = Session.session_id_counter
         self.active_user = None
+        self.operator: Operator = operator
+        self.readable_operator: str = Operator.readable_operator(operator)
 
         # Telemetry
-        self.question_answered = 0
-        self.points = 0
-        self.correct_answer = 0
-        self.incorrect_answer = 0
-        self.correct_streak = 0
-        self.max_correct_streak = 0
-        self.accuracy_percentage = 0
-        self.time_elasped = 0
-        self.average_time_per_question = 0
+        self.question_answered: int = 0
+        self.points: int = 0
+        self.correct_answer: int = 0
+        self.incorrect_answer: int = 0
+        self.correct_streak: int = 0
+        self.max_correct_streak: int = 0
+        self.accuracy_percentage: int = 0
+        self.time_elasped: float = 0
+        self.average_time_per_question: float = 0
+        self.five_recent_answer_results: list = []
 
         Session.session_id_counter += 1
+
 
     def connect_user(self, user):
         if self.active_user is not None: # Preventing overlapping users in the same session
             print(f"This session is occupied by {self.active_user.name}")
             return
         
-        if user.current_session is not None:    
+        if user.current_session is not None: # Preventing user joining multiple sessions
             print(f"This user is already in the other session ({user.current_session.id}).")
             return
         self.active_user = user
@@ -37,7 +41,6 @@ class Session:
         if self.active_user is not None:
             # Calculate Accuracy and
             if self.question_answered != 0:
-                self.accuracy_percentage = round((self.correct_answer / self.question_answered) * 100)
                 self.average_time_per_question = self.time_elasped / self.question_answered
                 # Creating telemetry summary report
                 self.summarise_telemetry()
@@ -57,12 +60,11 @@ class Session:
         from module.quiz import Quiz
         from module.user_answer import UserAnswer
 
-        
         print("Session is ready!\nAnswer the questions correctly.\n")
 
         while True:
             # Generate Quiz
-            quiz = Quiz.generate(self.active_user, Operator.MULTIPLICATION)
+            quiz = Quiz.generate(self.active_user, self.operator)
             print(quiz)
 
             # Start Quiz Timer
@@ -85,11 +87,16 @@ class Session:
             except ValueError:
                 print("Invalid input, please answer the question using only numbers.")
                 continue
-            result.update_difficulty()
 
             print(f"{result}! The answer is {result.quiz.answer}.\n")
 
+            # Update Telemetry and difficulty
             self.update_telemetry(result.is_correct, quiz_time_taken)
+            result.update_difficulty()
+
+            # Clear the five recent performance counter if its length reaches 5
+            if len(self.five_recent_answer_results) >= 5:
+                self.five_recent_answer_results.clear()
 
     def update_telemetry(self, is_correct: bool, time_elapsed: float) -> None:
         # Update Statstic
@@ -100,6 +107,7 @@ class Session:
             self.points += 1 # Base point for correct answer
             self.correct_answer += 1
             self.correct_streak += 1
+            self.five_recent_answer_results.append(is_correct)
 
             if self.correct_streak % 3 == 0:
                 # Annouce streak every 3 correct answers
@@ -120,14 +128,19 @@ class Session:
                 print("Streak ended!")
 
             self.correct_streak = 0
-    
+        
+        # Calculate Accuracy
+        self.accuracy_percentage = round((self.correct_answer / self.question_answered) * 100)
+
     def summarise_telemetry(self) -> None:
         if self.active_user is not None:
+            
             print(
                 f"{"="*50}\n"
                 f"Session Summary Report for session {self.id}\n",
                 f"User: {self.active_user.name}\n",
-                f"{self.points} Points!\n",
+                f"Earned {self.points} points!\n",
+                f"Game mode: {self.readable_operator}\n",
                 f"Time elapsed: {self.time_elasped:.2f} seconds\n\n",
                 f"Question answered: {self.question_answered}\n",
                 f"Accuracy: {self.accuracy_percentage} % ({self.correct_answer}/{self.question_answered})\n",

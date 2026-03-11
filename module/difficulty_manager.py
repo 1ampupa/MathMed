@@ -15,6 +15,8 @@ class DifficultyManager:
     INCREASE_RATE = 1
     DECREASE_RATE = 2
 
+    MINIMUM_ACCURACY_PERCENTAGE_INCREASE = 60 # (answer 3 of 5 questions correctly to increase difficulty)
+
     @classmethod
     def modify_difficulty(cls, chart: dict, operator: Operator, increase: bool) -> dict[Operator, int]:
         operator_max = chart[operator]
