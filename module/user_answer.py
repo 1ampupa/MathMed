@@ -11,6 +11,10 @@ class UserAnswer:
     @property
     def result(self) -> str:
         return "Correct" if self.answer == self.quiz.answer else "Incorrect"
+    
+    @property
+    def is_correct(self) -> bool:
+        return True if self.answer == self.quiz.answer else False
         
     def update_difficulty(self) -> bool:
         if self.quiz.operator == Operator.ADDITION or self.quiz.operator == Operator.SUBTRACTION:
