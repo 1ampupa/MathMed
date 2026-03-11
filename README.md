@@ -43,7 +43,7 @@ python main.py
 ```
 module/
 |- core
-    |- difficulty_manager.py    Handle Difficulty optimistiser algorithm
+    |- difficulty_manager.py    Handle the Difficulty Optimiser algorithm
     |- operator.py              Store Arithmetic operators enums
     |- quiz_modifier.py         Configuration for the pattern of the quiz
     |- quiz_validator.py        Handle validation of the quiz before sending it to user
@@ -60,4 +60,4 @@ This project is developed in my spare time. Updates may be gradual as I have oth
 
 Thank you and good luck coding!
 
-@1ampupa 05 Mar 2026
+@1ampupa 11 Mar 2026
