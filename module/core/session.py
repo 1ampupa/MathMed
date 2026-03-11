@@ -1,5 +1,6 @@
-import time
+import time, traceback
 from module.core.operator import Operator
+from module.core.state import State, StateManager
 
 class Session:
     session_id_counter = 1
@@ -25,7 +26,7 @@ class Session:
         Session.session_id_counter += 1
 
 
-    def connect_user(self, user):
+    def connect_user(self, user) -> None:
         if self.active_user is not None: # Preventing overlapping users in the same session
             print(f"This session is occupied by {self.active_user.name}")
             return
@@ -33,26 +34,39 @@ class Session:
         if user.current_session is not None: # Preventing user joining multiple sessions
             print(f"This user is already in the other session ({user.current_session.id}).")
             return
+        
+        StateManager.change_state(State.IN_SESSION)
         self.active_user = user
         user.current_session = self
         print(f"Connecting {user.name} to the session {self.id}")
 
-    def disconnect_user(self):
-        if self.active_user is not None:
-            # Calculate Accuracy and
-            if self.question_answered != 0:
-                self.average_time_per_question = self.time_elasped / self.question_answered
-                # Creating telemetry summary report
-                self.summarise_telemetry()
-            else:
-                print("Session abandoned; No summary report generated.")
-            
-            print(f"Disconnecting {self.active_user.name} from session {self.id}.")
-            self.active_user.current_session = None
+    def disconnect_user(self) -> None:
+        if StateManager.current_state != State.IN_SESSION:
+            print("Currently not in any session.")
+            return
+        
+        if self.active_user is None:
+            return
+        
+        print(f"Disconnecting {self.active_user.name} from session {self.id}.")
+        self.active_user.current_session = None
         self.active_user = None
+        StateManager.change_state(State.MAIN_MENU)
         print(f"Ended session {self.id}")
 
-    def start(self):
+        # Calculate Accuracy
+        if self.question_answered != 0:
+            self.average_time_per_question = self.time_elasped / self.question_answered
+            # Creating telemetry summary report
+            self.summarise_telemetry()
+        else:
+            print("Session abandoned; No summary report generated.")
+
+    def start(self) -> None:
+        if StateManager.current_state != State.IN_SESSION:
+            print("Not in any session.")
+            return
+        
         if self.active_user is None:
             print("Cannot start a session without any user.")
             return
@@ -63,40 +77,51 @@ class Session:
         print("Session is ready!\nAnswer the questions correctly.\n")
 
         while True:
-            # Generate Quiz
-            quiz = Quiz.generate(self.active_user, self.operator)
-            print(quiz)
-
-            # Start Quiz Timer
-            quiz_start_time = time.perf_counter()
-
-            # Receive User Answer
-            answer = input("Answer for world peace: ")
-
-            # Game Quit Handler (temporary)
-            if answer.strip().lower() == 'q':
-                self.disconnect_user()
-                print("You quit the game. Thanks for saving world peace.")
-                break
-            
-            quiz_time_taken = time.perf_counter() - quiz_start_time
-
-            # Check User Answer
             try:
-                result = UserAnswer(self.active_user, quiz, int(answer))
-            except ValueError:
-                print("Invalid input, please answer the question using only numbers.")
-                continue
+                # Generate Quiz
+                quiz = Quiz.generate(self.active_user, self.operator)
+                print(quiz)
 
-            print(f"{result}! The answer is {result.quiz.answer}.\n")
+                # Start Quiz Timer
+                quiz_start_time = time.perf_counter()
 
-            # Update Telemetry and difficulty
-            self.update_telemetry(result.is_correct, quiz_time_taken)
-            result.update_difficulty()
+                # Receive User Answer
+                answer = input("Answer for world peace: ")
 
-            # Clear the five recent performance counter if its length reaches 5
-            if len(self.five_recent_answer_results) >= 5:
-                self.five_recent_answer_results.clear()
+                # Game Quit Handler (temporary)
+                if answer.strip().lower() == 'q':
+                    self.disconnect_user()
+                    print("You quit the game. Thanks for saving world peace.")
+                    StateManager.change_state(State.MAIN_MENU)
+                    break
+                
+                quiz_time_taken = time.perf_counter() - quiz_start_time
+
+                # Check User Answer
+                try:
+                    result = UserAnswer(self.active_user, quiz, int(answer))
+                except ValueError:
+                    print("Invalid input, please answer the question using only numbers.")
+                    continue
+
+                print(f"{result}! The answer is {result.quiz.answer}.\n")
+
+                # Update Telemetry and difficulty
+                self.update_telemetry(result.is_correct, quiz_time_taken)
+                result.update_difficulty()
+
+                # Clear the five recent performance counter if its length reaches 5
+                if len(self.five_recent_answer_results) >= 5:
+                    self.five_recent_answer_results.clear()
+
+            except Exception as e:
+                self.disconnect_user()
+                StateManager.change_state(State.MAIN_MENU)
+                if StateManager.debug_mode:
+                    traceback.print_exc()
+                else:
+                    print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n{e}")     
+                break
 
     def update_telemetry(self, is_correct: bool, time_elapsed: float) -> None:
         # Update Statstic

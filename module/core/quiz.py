@@ -1,12 +1,11 @@
 from random import randint, choice
 
 from module.core.operator import Operator
+from module.core.state import StateManager
 from module.core.quiz_validator import QuizValidator
 from module.core.user import User
 
 class Quiz():
-    # Debug Mode (Show answer in the question)
-    debug_mode = False
 
     # Quiz number and Quizzes (Reset on startup and every game session)
     quiz_number: int = 1
@@ -56,10 +55,6 @@ class Quiz():
                 cls.recent_ten_operands_set.add((a,b))
                 return cls(a, b, operator)
 
-        # End session if there's no quiz able to generate
-        if user.current_session:
-            user.current_session.disconnect_user()
-
         raise ValueError("No valid quiz generated under this condition. Please change your quiz settings or revert to default settings.")
         
     # Getter Methods
@@ -88,7 +83,7 @@ class Quiz():
         Quiz.quizzes.clear()
     
     def __str__(self) -> str:
-        if Quiz.debug_mode:
+        if StateManager.debug_mode:
             return f"{self.quiz_number}. {self._operand_a} {self._operator.value} {self._operand_b} = {self._answer}"
         else:
             return f"{self.quiz_number}. {self._operand_a} {self._operator.value} {self._operand_b} = ?"
