@@ -1,6 +1,8 @@
 from enum import Enum, auto
 
 class Operator(Enum):
+    
+    # OPERATOR
     ADDITION = "+"
     SUBTRACTION = "-"
     MULTIPLICATION = "×"
@@ -16,7 +18,7 @@ class Operator(Enum):
         elif self is Operator.DIVISION:
             return int(a / b)
         
-    def readable_operator(self) -> str:
+    def readable(self) -> str:
         match self:
             case Operator.ADDITION: return Operator.ADDITION.value
             case Operator.SUBTRACTION: return Operator.SUBTRACTION.value

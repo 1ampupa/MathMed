@@ -2,8 +2,10 @@ from module.operator import Operator
 from module.quiz_modifier import QuizModifier
 
 class QuizValidator:
+
     @staticmethod
     def validate_quiz(a: int, b: int, operator: Operator) -> bool:
+        # Visit 'quiz_modifier.py' for more information and detailed logic
         match (operator):
             case Operator.ADDITION:
                 if not QuizModifier.allow_duplicate_addends and a == b: return False
@@ -23,5 +25,5 @@ class QuizValidator:
                 if not QuizModifier.allow_one_divisor and b == 1: return False
             case _:
                 return False
-        return True
+        return True # If all conditions are passed; Quiz is able to generate
     

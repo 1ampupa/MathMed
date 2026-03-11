@@ -14,7 +14,7 @@ class UserAnswer:
     @property # Return a readable result
     def result(self) -> str: return "Correct" if self.is_correct else "Incorrect"
        
-        
+    # Check condition from session wheather to increase or decrase the difficulty
     def update_difficulty(self) -> None:
         if self.user.current_session is not None:
             # Update difficulty every 5 quiz based on overall accuracy and recent performance

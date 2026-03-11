@@ -8,7 +8,7 @@ class Session:
         self.id = Session.session_id_counter
         self.active_user = None
         self.operator: Operator = operator
-        self.readable_operator: str = Operator.readable_operator(operator)
+        self.readable_operator: str = Operator.readable(operator)
 
         # Telemetry
         self.question_answered: int = 0

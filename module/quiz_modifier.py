@@ -1,6 +1,6 @@
 class QuizModifier():
+    
     # Default Settings
-
     allow_duplicate_addends = True         # a + a
     allow_zero_addend = False              # a + 0 | 0 + a | 0 + 0
     
