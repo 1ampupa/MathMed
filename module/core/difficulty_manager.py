@@ -1,14 +1,14 @@
-from module.core.operator import Operator
+from module.core.operators import Operators
 
 class DifficultyManager:
 
     # Constants
     LOWEST_MAXIMUM: int = 5
-    HIGHEST_MAXIMUM: dict[Operator, int] = {
-        Operator.ADDITION: 100,
-        Operator.SUBTRACTION: 100,
-        Operator.MULTIPLICATION: 25,
-        Operator.DIVISION: 25
+    HIGHEST_MAXIMUM: dict[Operators, int] = {
+        Operators.ADDITION: 100,
+        Operators.SUBTRACTION: 100,
+        Operators.MULTIPLICATION: 25,
+        Operators.DIVISION: 25
     }
 
     INCREASE_RATE = 1
@@ -19,7 +19,7 @@ class DifficultyManager:
     # Modify user difficulty and return it
 
     @classmethod
-    def modify_difficulty(cls, chart: dict, operator: Operator, increase: bool) -> dict[Operator, int]:
+    def modify_difficulty(cls, chart: dict, operator: Operators, increase: bool) -> dict[Operators, int]:
         operator_max = chart[operator]
         operator_max += cls.INCREASE_RATE if increase else - cls.DECREASE_RATE
             

@@ -1,15 +1,15 @@
 import time, traceback
-from module.core.operator import Operator
+from module.core.operators import Operators
 from module.core.state import State, StateManager
 
 class Session:
     session_id_counter = 1
 
-    def __init__(self, operator: Operator) -> None:
+    def __init__(self, Operators: Operators) -> None:
         self.id = Session.session_id_counter
         self.active_user = None
-        self.operator: Operator = operator
-        self.readable_operator: str = Operator.readable(operator)
+        self.operator: Operators = Operators
+        self.readable_operator: str = Operators.readable()
 
         # Telemetry
         self.question_answered: int = 0
@@ -64,7 +64,7 @@ class Session:
 
     def start(self) -> None:
         if StateManager.current_state != State.IN_SESSION:
-            print("Not in any session.")
+            print("User is not in any session.")
             return
         
         if self.active_user is None:
@@ -91,8 +91,8 @@ class Session:
                 # Game Quit Handler (temporary)
                 if answer.strip().lower() == 'q':
                     self.disconnect_user()
-                    print("You quit the game. Thanks for saving world peace.")
                     StateManager.change_state(State.MAIN_MENU)
+                    print("You quit the game. Thanks for saving world peace.")
                     break
                 
                 quiz_time_taken = time.perf_counter() - quiz_start_time
@@ -118,9 +118,11 @@ class Session:
                 self.disconnect_user()
                 StateManager.change_state(State.MAIN_MENU)
                 if StateManager.debug_mode:
+                    print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n")
                     traceback.print_exc()
                 else:
                     print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n{e}")     
+                input("Press Enter Button to return to main menu.")
                 break
 
     def update_telemetry(self, is_correct: bool, time_elapsed: float) -> None:
