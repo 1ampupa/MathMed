@@ -48,12 +48,6 @@ class Session:
         if self.active_user is None:
             return
         
-        print(f"Disconnecting {self.active_user.name} from session {self.id}.")
-        self.active_user.current_session = None
-        self.active_user = None
-        StateManager.change_state(State.MAIN_MENU)
-        print(f"Ended session {self.id}")
-
         # Calculate Accuracy
         if self.question_answered != 0:
             self.average_time_per_question = self.time_elasped / self.question_answered
@@ -61,6 +55,12 @@ class Session:
             self.summarise_telemetry()
         else:
             print("Session abandoned; No summary report generated.")
+
+        print(f"Disconnecting {self.active_user.name} from session {self.id}.")
+        self.active_user.current_session = None
+        self.active_user = None
+        StateManager.change_state(State.MAIN_MENU)
+        print(f"Ended session {self.id}")
 
     def start(self) -> None:
         if StateManager.current_state != State.IN_SESSION:
