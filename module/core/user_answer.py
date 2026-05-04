@@ -30,5 +30,6 @@ class UserAnswer:
                 else:
                     difficulty = self.user.update_difficulty(self.quiz.operator, False)
                     print(f"Quiz difficulty is now decreased. Now {difficulty}/{DifficultyManager.HIGHEST_MAXIMUM[self.quiz.operator]}")
+    
     def __str__(self) -> str:
         return self.result

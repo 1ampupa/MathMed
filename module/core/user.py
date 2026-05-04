@@ -1,6 +1,7 @@
 from module.core.operators import Operators
 from module.core.save_load import SaveLoad
 from module.core.difficulty_manager import DifficultyManager
+from module.core.state import StateManager
 from module.core.session import Session
 
 class User:
@@ -11,7 +12,7 @@ class User:
         self.name: str = name or "User"
         self.id: str = "_".join(self.name.strip().lower().split())
         self.current_session: Session | None = None
-        print(self.name, self.id)
+        if StateManager.debug_mode: print(f'Created user: {self.name} with id: {self.id}')
 
         # Difficulty chart with default value
         self.difficulty_chart: dict = {
