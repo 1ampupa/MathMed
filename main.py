@@ -11,11 +11,9 @@ StateManager.debug_mode = False
 SaveLoad.create_core_folders()
 
 user1 = User.create()
-user2 = User.create()
 
 print(f"Hi, {user1.name}!")
 
 session = Session(Operators.MULTIPLICATION)
 session.connect_user(user1)
-session.connect_user(user2)
 session.start()

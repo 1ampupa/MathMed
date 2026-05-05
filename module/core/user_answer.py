@@ -26,10 +26,10 @@ class UserAnswer:
                     DifficultyManager.MINIMUM_ACCURACY_PERCENTAGE_INCREASE
                 ):
                     difficulty = self.user.update_difficulty(self.quiz.operator, True)
-                    print(f"Quiz difficulty is now increased. Now {difficulty}/{DifficultyManager.HIGHEST_MAXIMUM[self.quiz.operator]}")
+                    print(f"Quiz difficulty is now increased. Now {difficulty}/{DifficultyManager.HIGHEST_MAXIMUM[self.quiz.operator]}\n")
                 else:
                     difficulty = self.user.update_difficulty(self.quiz.operator, False)
-                    print(f"Quiz difficulty is now decreased. Now {difficulty}/{DifficultyManager.HIGHEST_MAXIMUM[self.quiz.operator]}")
+                    print(f"Quiz difficulty is now decreased. Now {difficulty}/{DifficultyManager.HIGHEST_MAXIMUM[self.quiz.operator]}\n")
     
     def __str__(self) -> str:
         return self.result
