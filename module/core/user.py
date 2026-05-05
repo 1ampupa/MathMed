@@ -1,5 +1,4 @@
 from module.core.operators import Operators
-from module.core.save_load import SaveLoad
 from module.core.difficulty_manager import DifficultyManager
 from module.core.state import StateManager, State
 from module.core.session import Session
@@ -22,7 +21,8 @@ class User:
             Operators.DIVISION: 5,
         }
 
-        User.users.append(self)
+        # State
+        self.current_state = State.MAIN_MENU
 
         # Session Telemetry
         self.question_answered: int = 0
@@ -36,6 +36,8 @@ class User:
         self.average_time_per_question: float = 0
         self.five_recent_answer_results: list = []
 
+        User.users.append(self)
+
     @property
     def readable_question_answered(self) -> str:
         if self.question_answered == 1:
@@ -46,17 +48,13 @@ class User:
     # Create user
     @classmethod
     def create(cls) -> User:
-        # Get username
-        name = input("Enter your name: ")
-        # Check for taken username
-        for user in cls.users:
-            if (name == user.name
-                and "_".join(name.strip().lower().split()) == user.id
-            ): 
-                print("This username is taken. Please try another one.")
-                return cls.create()
-
-        return cls(name)
+        while True:
+            # Get username
+            name = input("Enter your name: ")
+            # Check for taken username
+            if not any(user.name == name for user in cls.users):
+                return cls(name)
+            print("This username is taken. Please try another one.")
 
     # Session Telemetry
     def reset_session_telemetry(self) -> None:
@@ -88,7 +86,7 @@ class User:
 
         # User Telemetry
 
-        StateManager.change_state(State.IN_SESSION)
+        StateManager.change_state(self, State.IN_SESSION)
 
     def disconnect_session(self, session: Session) -> None:
         if self.current_session is None:
@@ -106,7 +104,7 @@ class User:
         
         self.current_session = None
         self.reset_session_telemetry()
-        StateManager.change_state(State.MAIN_MENU)
+        StateManager.change_state(self, State.MAIN_MENU)
 
     # Difficulty
     def update_difficulty(self, operator: Operators, increase: bool) -> int:

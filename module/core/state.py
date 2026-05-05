@@ -8,8 +8,7 @@ class State(Enum):
     
 class StateManager():
     debug_mode = False
-    current_state = State.MAIN_MENU
 
-    @classmethod
-    def change_state(cls, state: State):
-        cls.current_state = state
+    @staticmethod
+    def change_state(user, state: State):
+        user.current_state = state

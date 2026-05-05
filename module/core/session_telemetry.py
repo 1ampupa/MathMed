@@ -1,4 +1,4 @@
-from module.core.state import State, StateManager
+from module.core.state import StateManager
 from module.core.session import Session
 from module.core.user import User
 
@@ -45,7 +45,7 @@ class SessionTelemetry():
         if user.points < 0: user.points = 0
 
         # Pop the last index of the five recent performance counter if its length reaches 5
-        if len(user.five_recent_answer_results) >= 5:
+        if len(user.five_recent_answer_results) > 5:
             user.five_recent_answer_results.pop(0)
 
     @staticmethod

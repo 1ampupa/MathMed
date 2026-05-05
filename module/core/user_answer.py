@@ -18,7 +18,7 @@ class UserAnswer:
     def update_difficulty(self) -> None:
         if self.user.current_session is not None:
             # Update difficulty every 5 quiz based on overall accuracy and recent performance
-            if self.quiz.quiz_number % 5 == 0:
+            if self.user.question_answered % 5 == 0 and self.user.question_answered != 0:
                 if (
                     self.user.accuracy_percentage >= 
                     DifficultyManager.MINIMUM_ACCURACY_PERCENTAGE_INCREASE

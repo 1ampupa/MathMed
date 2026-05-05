@@ -12,7 +12,7 @@ class Session:
         self.readable_operator: str = Operators.readable()
 
         # Session Settings
-        self.max_active_users: int = 1
+        self.max_active_users: int = 2
         self.min_questions_for_report: int = 3
 
         # Session Telemetry
@@ -57,12 +57,8 @@ class Session:
     def end_session(self) -> None:
         for user in self.active_users:
             self.summarise_user_performance(user)
-
-        # Disconnect
-        if self.active_users is not None:
-            for user in self.active_users:
+            if self.active_users is not None:
                 user.disconnect_session(self)
-            self.active_users = []
 
         print(f"Ended session (id: {self.id})")
 
@@ -70,10 +66,6 @@ class Session:
 
     def start(self) -> None:
         # Check Process
-        # Check client state
-        if StateManager.current_state != State.IN_SESSION:
-            print("Client is not in any session.")
-            return
         
         # Check user in session
         if self.active_users is None:
