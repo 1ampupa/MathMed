@@ -1,4 +1,4 @@
-import time, traceback
+import traceback
 from module.core.operators import Operators
 from module.core.state import State, StateManager
 
@@ -19,7 +19,7 @@ class Session:
         self.correct_streak: int = 0
         self.max_correct_streak: int = 0
         self.accuracy_percentage: int = 0
-        self.time_elasped: float = 0
+        self.time_elapsed: float = 0
         self.average_time_per_question: float = 0
         self.five_recent_answer_results: list = []
 
@@ -49,7 +49,9 @@ class Session:
         else:
             print(f"Connecting {user.name} to the session...")
 
-    def disconnect_user(self) -> None:
+    def end_session(self) -> None:
+        from module.core.session_telemetry import SessionTelemetry
+
         if StateManager.current_state != State.IN_SESSION:
             print("Currently not in any session.")
             return
@@ -64,19 +66,17 @@ class Session:
             print(f"Disconnecting {self.active_user.name} from the session.")
 
         # Calculate Accuracy
-        from module.core.session_telemetry import SessionTelemetry
         if self.question_answered != 0:
-            self.average_time_per_question = self.time_elasped / self.question_answered
+            self.average_time_per_question = self.time_elapsed / self.question_answered
             print("Generating your summary report...")
             # Creating telemetry summary report
-            SessionTelemetry.summarise_telemetry()
+            SessionTelemetry.summarise_telemetry(self)
         else:
             print("Session abandoned; No summary report generated.")
 
-        # Disconnecting
+        # Disconnect
         self.active_user.current_session = None
         self.active_user = None
-        StateManager.change_state(State.MAIN_MENU)
         if StateManager.debug_mode: print(f"Ended session (id: {self.id})")
 
     def start(self) -> None:
@@ -91,61 +91,23 @@ class Session:
         if self.active_user is None:
             print("Cannot start a session without any user.")
             return
-        
-        from module.core.quiz import Quiz
-        from module.core.user_answer import UserAnswer
 
         print("Answer the questions correctly.\nType 'q' to exit the game.")
 
         # Game loop
-        from module.core.session_telemetry import SessionTelemetry
-        SessionTelemetry.current_session = self
+        from module.core.session_loop import SessionLoop
+
         while True:
             try:
-                # Generate Quiz
-                quiz = Quiz.generate(self.active_user, self.operator)
-                print(quiz)
-
-                # Start Quiz Timer
-                quiz_start_time = time.perf_counter()
-
-                # Receive User Answer
-                answer = input("Answer for world peace: ")
-
-                # Game Quit Handler (temporary)
-                if answer.strip().lower() == 'q':
-                    print("You quit the game. Thank you for saving world peace.")
-                    self.disconnect_user()
-                    StateManager.change_state(State.MAIN_MENU)
-                    break
-                
-                quiz_time_taken = time.perf_counter() - quiz_start_time
-
-                # Check User Answer
-                try:
-                    result = UserAnswer(self.active_user, quiz, int(answer))
-                except ValueError:
-                    print("Invalid input, please answer the question using only numbers.")
-                    Quiz.rollback_last_quiz() # Restart the quiz. aka. remove the old one out of the existance :sad:
-                    continue
-
-                print(f"{result}! The answer is {result.quiz.answer}.\n")
-
-                # Update difficulty and telemetry
-                result.update_difficulty()
-                SessionTelemetry.update_telemetry(result.is_correct, quiz_time_taken)
-
-                # Pop the last index of the five recent performance counter if its length reaches 5
-                if len(self.five_recent_answer_results) >= 5:
-                    self.five_recent_answer_results.pop(0)
-
+                looping = SessionLoop.loop(self)
+                if not looping: break
             except Exception as e:
                 if StateManager.debug_mode:
                     print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n")
                     traceback.print_exc()
                 else:
                     print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n{e}")
-                self.disconnect_user()
-                StateManager.change_state(State.MAIN_MENU)     
+                self.end_session()
+                StateManager.change_state(State.MAIN_MENU)
                 input("Press Enter Button to return to main menu.")
                 break

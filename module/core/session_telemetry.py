@@ -2,79 +2,77 @@ from module.core.state import State, StateManager
 from module.core.session import Session
 
 class SessionTelemetry():
-
-    current_session: Session | None = None
-
-    @classmethod
-    def update_telemetry(cls, is_correct: bool, time_elapsed: float) -> None:
-        if not cls.current_session:
+    
+    @staticmethod
+    def update_telemetry(session: Session, is_correct: bool, time_elapsed: float) -> None:
+        if not session:
             return
         # Update Statstic
-        cls.current_session.question_answered += 1
-        cls.current_session.time_elasped += time_elapsed
+        session.question_answered += 1
+        session.time_elapsed += time_elapsed
 
         if is_correct:
-            cls.current_session.points += 1 # Base point for correct answer
-            cls.current_session.correct_answer += 1
-            cls.current_session.correct_streak += 1
-            cls.current_session.five_recent_answer_results.append(is_correct)
+            session.points += 1 # Base point for correct answer
+            session.correct_answer += 1
+            session.correct_streak += 1
+            session.five_recent_answer_results.append(is_correct)
 
-            if cls.current_session.correct_streak % 5 == 0:
+            if session.correct_streak % 5 == 0:
                 # Annouce streak for every 5 correct answers
-                print(f"Correct {cls.current_session.correct_streak} times in a row, +1 Point!\n")
+                print(f"Correct {session.correct_streak} times in a row, +1 Point!\n")
                 # Bonus +1 Point for every 5 correct answers
-                cls.current_session.points += 1
+                session.points += 1
 
-            if cls.current_session.correct_streak > cls.current_session.max_correct_streak: # Record max streak
-                cls.current_session.max_correct_streak = cls.current_session.correct_streak
+            if session.correct_streak > session.max_correct_streak: # Record max streak
+                session.max_correct_streak = session.correct_streak
         else:
-            cls.current_session.points -= 1 # Base point for incorrect answer
-            cls.current_session.incorrect_answer += 1
+            session.points -= 1 # Base point for incorrect answer
+            session.incorrect_answer += 1
 
-            if cls.current_session.correct_streak >= 5:
+            if session.correct_streak >= 5:
                 # Annouce end of streak if user has 5+ streak
-                print(f"{cls.current_session.correct_streak} streaks has ended!\n")
+                print(f"{session.correct_streak} streaks has ended!\n")
 
-            cls.current_session.correct_streak = 0
+            session.correct_streak = 0
         
         # Calculate Accuracy
-        cls.current_session.accuracy_percentage = round((cls.current_session.correct_answer / cls.current_session.question_answered) * 100)
+        session.accuracy_percentage = round((session.correct_answer / session.question_answered) * 100)
 
         # Reset point if it went negative
-        if cls.current_session.points < 0: cls.current_session.points = 0
+        if session.points < 0: session.points = 0
 
-    @classmethod
-    def summarise_telemetry(cls) -> None:
-        if cls.current_session is None:
+    @staticmethod
+    def summarise_telemetry(session: Session) -> None:
+        if session is None:
             print("No session to generate a summary report.")
             return
-        if cls.current_session.active_user is not None:
+        if session.active_user is not None:
             if not StateManager.debug_mode: # General result
                 print(
                     f"{"="*50}\n"
                     f"Summary Report\n",
-                    f"User: {cls.current_session.active_user.name}\n",
-                    f"You earned a total of {cls.current_session.points} points!\n",
-                    f"Game mode: {cls.current_session.readable_operator} ({cls.current_session.operator.name})\n",
-                    f"Time elapsed: {cls.current_session.time_elasped:.1f} seconds\n\n",
-                    f"Question answered: {cls.current_session.readable_question_answered}\n",
-                    f"Accuracy: {cls.current_session.accuracy_percentage}% ({cls.current_session.correct_answer}/{cls.current_session.question_answered})\n",
-                    f"Longest streak: {cls.current_session.max_correct_streak}\n",
-                    f"Avg. Time/Question: {cls.current_session.average_time_per_question:.1f} seconds\n",
+                    f"User: {session.active_user.name}\n",
+                    f"You earned a total of {session.points} points!\n",
+                    f"Game mode: {session.readable_operator} ({session.operator.name})\n",
+                    f"Time elapsed: {session.time_elapsed:.1f} seconds\n\n",
+                    f"Question answered: {session.readable_question_answered}\n",
+                    f"Accuracy: {session.accuracy_percentage}% ({session.correct_answer}/{session.question_answered})\n",
+                    f"Longest streak: {session.max_correct_streak}\n",
+                    f"Avg. Time/Question: {session.average_time_per_question:.1f} seconds\n",
                     f"{"="*50}"
                 )
             else: # Technical result
                 print(
                     f"{"="*50}\n"
-                    f"Summary Report for session {cls.current_session.id}.\n",
-                    f"User: {cls.current_session.active_user.name} (user id: {cls.current_session.active_user.id})\n",
-                    f"Earned {cls.current_session.points} points!\n",
-                    f"Game mode: {cls.current_session.readable_operator} ({cls.current_session.operator})\n",
-                    f"Time elapsed: {cls.current_session.time_elasped:.2f} seconds\n\n",
-                    f"Question answered: {cls.current_session.readable_question_answered}\n",
-                    f"Accuracy: {cls.current_session.accuracy_percentage}% ({cls.current_session.correct_answer}/{cls.current_session.question_answered})\n",
-                    f"Longest streak: {cls.current_session.max_correct_streak}\n",
-                    f"Avg. Time/Question: {cls.current_session.average_time_per_question:.2f} seconds\n",
+                    f"Summary Report for session {session.id}.\n",
+                    f"User: {session.active_user.name} (user id: {session.active_user.id})\n",
+                    f"Earned {session.points} points!\n",
+                    f"Game mode: {session.readable_operator} ({session.operator})\n",
+                    f"Time elapsed: {session.time_elapsed:.2f} seconds\n\n",
+                    f"Question answered: {session.readable_question_answered}\n",
+                    f"Accuracy: {session.accuracy_percentage}% ({session.correct_answer}/{session.question_answered})\n",
+                    f"Longest streak: {session.max_correct_streak}\n",
+                    f"Avg. Time/Question: {session.average_time_per_question:.2f} seconds\n",
                     f"{"="*50}"
                 )
         else:
