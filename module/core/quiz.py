@@ -82,6 +82,12 @@ class Quiz():
         Quiz.quiz_number = 1
         Quiz.quizzes.clear()
     
+    @staticmethod
+    def rollback_last_quiz() -> None:
+        if Quiz.quizzes:
+            Quiz.quizzes.pop()
+            Quiz.quiz_number = len(Quiz.quizzes) + 1
+
     def __str__(self) -> str:
         if StateManager.debug_mode:
             return f"{self.quiz_number}. {self._operand_a} {self._operator.value} {self._operand_b} = {self._answer}"

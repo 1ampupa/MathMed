@@ -16,7 +16,7 @@ class Operators(Enum):
         elif self is Operators.MULTIPLICATION:
             return a * b
         elif self is Operators.DIVISION:
-            return int(a / b)
+            return a // b
         
     def readable(self) -> str:
         match self:

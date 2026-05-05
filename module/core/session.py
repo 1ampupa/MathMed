@@ -55,22 +55,29 @@ class Session:
             return
         
         if self.active_user is None:
+            print("There's no active user in this session.")
             return
         
+        if StateManager.debug_mode:
+            print(f"Disconnecting {self.active_user.name} from the session (id: {self.id}).")
+        else:
+            print(f"Disconnecting {self.active_user.name} from the session.")
+
         # Calculate Accuracy
         from module.core.session_telemetry import SessionTelemetry
         if self.question_answered != 0:
             self.average_time_per_question = self.time_elasped / self.question_answered
+            print("Generating your summary report...")
             # Creating telemetry summary report
             SessionTelemetry.summarise_telemetry()
         else:
             print("Session abandoned; No summary report generated.")
 
-        if StateManager.debug_mode: print(f"Disconnecting {self.active_user.name} from session {self.id}.")
+        # Disconnecting
         self.active_user.current_session = None
         self.active_user = None
         StateManager.change_state(State.MAIN_MENU)
-        if StateManager.debug_mode: print(f"Ended session {self.id}")
+        if StateManager.debug_mode: print(f"Ended session (id: {self.id})")
 
     def start(self) -> None:
         # Check Process
@@ -88,7 +95,7 @@ class Session:
         from module.core.quiz import Quiz
         from module.core.user_answer import UserAnswer
 
-        print("Answer the questions correctly.\n")
+        print("Answer the questions correctly.\nType 'q' to exit the game.")
 
         # Game loop
         from module.core.session_telemetry import SessionTelemetry
@@ -107,9 +114,9 @@ class Session:
 
                 # Game Quit Handler (temporary)
                 if answer.strip().lower() == 'q':
+                    print("You quit the game. Thank you for saving world peace.")
                     self.disconnect_user()
                     StateManager.change_state(State.MAIN_MENU)
-                    print("You quit the game. Thanks for saving world peace.")
                     break
                 
                 quiz_time_taken = time.perf_counter() - quiz_start_time
@@ -119,25 +126,26 @@ class Session:
                     result = UserAnswer(self.active_user, quiz, int(answer))
                 except ValueError:
                     print("Invalid input, please answer the question using only numbers.")
+                    Quiz.rollback_last_quiz() # Restart the quiz. aka. remove the old one out of the existance :sad:
                     continue
 
                 print(f"{result}! The answer is {result.quiz.answer}.\n")
 
-                # Update Telemetry and difficulty
-                SessionTelemetry.update_telemetry(result.is_correct, quiz_time_taken)
+                # Update difficulty and telemetry
                 result.update_difficulty()
+                SessionTelemetry.update_telemetry(result.is_correct, quiz_time_taken)
 
                 # Pop the last index of the five recent performance counter if its length reaches 5
                 if len(self.five_recent_answer_results) >= 5:
-                    self.five_recent_answer_results.pop()
+                    self.five_recent_answer_results.pop(0)
 
             except Exception as e:
-                self.disconnect_user()
-                StateManager.change_state(State.MAIN_MENU)
                 if StateManager.debug_mode:
                     print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n")
                     traceback.print_exc()
                 else:
-                    print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n{e}")     
+                    print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n{e}")
+                self.disconnect_user()
+                StateManager.change_state(State.MAIN_MENU)     
                 input("Press Enter Button to return to main menu.")
                 break

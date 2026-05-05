@@ -4,9 +4,9 @@ from module.core.quiz_modifier import QuizModifier
 class QuizValidator:
 
     @staticmethod
-    def validate_quiz(a: int, b: int, Operators: Operators) -> bool:
+    def validate_quiz(a: int, b: int, operators: Operators) -> bool:
         # Visit 'quiz_modifier.py' for more information and detailed logic
-        match (Operators):
+        match (operators):
             case Operators.ADDITION:
                 if not QuizModifier.allow_duplicate_addends and a == b: return False
                 if not QuizModifier.allow_zero_addend and (a == 0 or b == 0): return False
