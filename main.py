@@ -1,16 +1,18 @@
-from module.core.operator import Operator
+from module.core.operators import Operators
+from module.core.save_load import SaveLoad
 from module.core.state import State, StateManager
 from module.core.user import User
 from module.core.session import Session
-from module.core.quiz import Quiz
 
 # Debug Mode for each script
 StateManager.debug_mode = False
 
-user = User(input("Enter your name: "))
+SaveLoad.create_core_folders()
+
+user = User.create()
 
 print(f"Hi, {user.name}!")
 
-session = Session(Operator.MULTIPLICATION)
+session = Session(Operators.MULTIPLICATION)
 session.connect_user(user)
 session.start()

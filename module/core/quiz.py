@@ -1,6 +1,6 @@
 from random import randint, choice
 
-from module.core.operator import Operator
+from module.core.operators import Operators
 from module.core.state import StateManager
 from module.core.quiz_validator import QuizValidator
 from module.core.user import User
@@ -12,11 +12,11 @@ class Quiz():
     quizzes: list = []
     recent_ten_operands_set: set[tuple[int,int]] = set() # To prevent repeating question
 
-    def __init__(self, a: int, b: int, operator: Operator) -> None:
+    def __init__(self, a: int, b: int, operator: Operators) -> None:
         self.quiz_number = Quiz.quiz_number
         self._operand_a: int = a
         self._operand_b: int = b
-        self._operator: Operator = operator
+        self._operator: Operators = operator
         self._answer: int = self._operator.apply(self._operand_a, self._operand_b)
 
         Quiz.quizzes.append(self)
@@ -24,7 +24,7 @@ class Quiz():
 
     # Quiz Generator
     @classmethod
-    def generate(cls, user: User, operator: Operator) -> Quiz:
+    def generate(cls, user: User, operator: Operators) -> Quiz:
         # Pop the first quiz's numbers set when the list reach 10
         if len(cls.recent_ten_operands_set) > 10:
             cls.recent_ten_operands_set.pop()
@@ -44,7 +44,7 @@ class Quiz():
                 continue
 
             # Generate direct divisible question for division
-            if operator is Operator.DIVISION:
+            if operator is Operators.DIVISION:
                 dividend = a * b
                 divisor = choice([a,b])
                 a = dividend
@@ -68,7 +68,7 @@ class Quiz():
         return self._operand_b
 
     @property
-    def operator(self) -> Operator:
+    def operator(self) -> Operators:
         return self._operator
 
     @property
@@ -82,6 +82,12 @@ class Quiz():
         Quiz.quiz_number = 1
         Quiz.quizzes.clear()
     
+    @staticmethod
+    def rollback_last_quiz() -> None:
+        if Quiz.quizzes:
+            Quiz.quizzes.pop()
+            Quiz.quiz_number = len(Quiz.quizzes) + 1
+
     def __str__(self) -> str:
         if StateManager.debug_mode:
             return f"{self.quiz_number}. {self._operand_a} {self._operator.value} {self._operand_b} = {self._answer}"

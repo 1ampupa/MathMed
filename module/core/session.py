@@ -1,15 +1,15 @@
-import time, traceback
-from module.core.operator import Operator
+import traceback
+from module.core.operators import Operators
 from module.core.state import State, StateManager
 
 class Session:
     session_id_counter = 1
 
-    def __init__(self, operator: Operator) -> None:
+    def __init__(self, Operators: Operators) -> None:
         self.id = Session.session_id_counter
         self.active_user = None
-        self.operator: Operator = operator
-        self.readable_operator: str = Operator.readable(operator)
+        self.operator: Operators = Operators
+        self.readable_operator: str = Operators.readable()
 
         # Telemetry
         self.question_answered: int = 0
@@ -19,12 +19,18 @@ class Session:
         self.correct_streak: int = 0
         self.max_correct_streak: int = 0
         self.accuracy_percentage: int = 0
-        self.time_elasped: float = 0
+        self.time_elapsed: float = 0
         self.average_time_per_question: float = 0
         self.five_recent_answer_results: list = []
 
         Session.session_id_counter += 1
 
+    @property
+    def readable_question_answered(self) -> str:
+        if self.question_answered == 1:
+            return f'1 question'
+        else:
+            return f'{self.question_answered} questions'
 
     def connect_user(self, user) -> None:
         if self.active_user is not None: # Preventing overlapping users in the same session
@@ -38,140 +44,70 @@ class Session:
         StateManager.change_state(State.IN_SESSION)
         self.active_user = user
         user.current_session = self
-        print(f"Connecting {user.name} to the session {self.id}")
+        if StateManager.debug_mode:
+            print(f"Connecting {user.name} to the session... (id: {self.id})")
+        else:
+            print(f"Connecting {user.name} to the session...")
 
-    def disconnect_user(self) -> None:
+    def end_session(self) -> None:
+        from module.core.session_telemetry import SessionTelemetry
+
         if StateManager.current_state != State.IN_SESSION:
             print("Currently not in any session.")
             return
         
         if self.active_user is None:
+            print("There's no active user in this session.")
             return
         
-        print(f"Disconnecting {self.active_user.name} from session {self.id}.")
-        self.active_user.current_session = None
-        self.active_user = None
-        StateManager.change_state(State.MAIN_MENU)
-        print(f"Ended session {self.id}")
+        if StateManager.debug_mode:
+            print(f"Disconnecting {self.active_user.name} from the session (id: {self.id}).")
+        else:
+            print(f"Disconnecting {self.active_user.name} from the session.")
 
         # Calculate Accuracy
         if self.question_answered != 0:
-            self.average_time_per_question = self.time_elasped / self.question_answered
+            self.average_time_per_question = self.time_elapsed / self.question_answered
+            print("Generating your summary report...")
             # Creating telemetry summary report
-            self.summarise_telemetry()
+            SessionTelemetry.summarise_telemetry(self)
         else:
             print("Session abandoned; No summary report generated.")
 
+        # Disconnect
+        self.active_user.current_session = None
+        self.active_user = None
+        if StateManager.debug_mode: print(f"Ended session (id: {self.id})")
+
     def start(self) -> None:
+        # Check Process
+
+        # Check client state
         if StateManager.current_state != State.IN_SESSION:
-            print("Not in any session.")
+            print("Client is not in any session.")
             return
         
+        # Check user in session
         if self.active_user is None:
             print("Cannot start a session without any user.")
             return
-        
-        from module.core.quiz import Quiz
-        from module.core.user_answer import UserAnswer
 
-        print("Session is ready!\nAnswer the questions correctly.\n")
+        print("Answer the questions correctly.\nType 'q' to exit the game.")
+
+        # Game loop
+        from module.core.session_loop import SessionLoop
 
         while True:
             try:
-                # Generate Quiz
-                quiz = Quiz.generate(self.active_user, self.operator)
-                print(quiz)
-
-                # Start Quiz Timer
-                quiz_start_time = time.perf_counter()
-
-                # Receive User Answer
-                answer = input("Answer for world peace: ")
-
-                # Game Quit Handler (temporary)
-                if answer.strip().lower() == 'q':
-                    self.disconnect_user()
-                    print("You quit the game. Thanks for saving world peace.")
-                    StateManager.change_state(State.MAIN_MENU)
-                    break
-                
-                quiz_time_taken = time.perf_counter() - quiz_start_time
-
-                # Check User Answer
-                try:
-                    result = UserAnswer(self.active_user, quiz, int(answer))
-                except ValueError:
-                    print("Invalid input, please answer the question using only numbers.")
-                    continue
-
-                print(f"{result}! The answer is {result.quiz.answer}.\n")
-
-                # Update Telemetry and difficulty
-                self.update_telemetry(result.is_correct, quiz_time_taken)
-                result.update_difficulty()
-
-                # Clear the five recent performance counter if its length reaches 5
-                if len(self.five_recent_answer_results) >= 5:
-                    self.five_recent_answer_results.clear()
-
+                looping = SessionLoop.loop(self)
+                if not looping: break
             except Exception as e:
-                self.disconnect_user()
-                StateManager.change_state(State.MAIN_MENU)
                 if StateManager.debug_mode:
+                    print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n")
                     traceback.print_exc()
                 else:
-                    print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n{e}")     
+                    print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n{e}")
+                self.end_session()
+                StateManager.change_state(State.MAIN_MENU)
+                input("Press Enter Button to return to main menu.")
                 break
-
-    def update_telemetry(self, is_correct: bool, time_elapsed: float) -> None:
-        # Update Statstic
-        self.question_answered += 1
-        self.time_elasped += time_elapsed
-
-        if is_correct:
-            self.points += 1 # Base point for correct answer
-            self.correct_answer += 1
-            self.correct_streak += 1
-            self.five_recent_answer_results.append(is_correct)
-
-            if self.correct_streak % 3 == 0:
-                # Annouce streak every 3 correct answers
-                print(f"Correct {self.correct_streak} times in a row!")
-
-            if self.correct_streak >= 3:
-                # Bonus +1 Point when streak is 3+
-                self.points += 1
-
-            if self.correct_streak > self.max_correct_streak: # Record max streak
-                self.max_correct_streak = self.correct_streak
-        else:
-            self.points -= 1 # Base point for incorrect answer
-            self.incorrect_answer += 1
-
-            if self.correct_streak >= 3:
-                # Annouce end of streak if user has 3+ streak
-                print("Streak ended!")
-
-            self.correct_streak = 0
-        
-        # Calculate Accuracy
-        self.accuracy_percentage = round((self.correct_answer / self.question_answered) * 100)
-
-    def summarise_telemetry(self) -> None:
-        if self.active_user is not None:
-            
-            print(
-                f"{"="*50}\n"
-                f"Session Summary Report for session {self.id}\n",
-                f"User: {self.active_user.name}\n",
-                f"Earned {self.points} points!\n",
-                f"Game mode: {self.readable_operator}\n",
-                f"Time elapsed: {self.time_elasped:.2f} seconds\n\n",
-                f"Question answered: {self.question_answered}\n",
-                f"Accuracy: {self.accuracy_percentage} % ({self.correct_answer}/{self.question_answered})\n",
-                f"Max streak: {self.max_correct_streak}\n",
-                f"Avg. Time/Question: {self.average_time_per_question:.2f} seconds\n",
-                f"{"="*50}"
-            )
-        else:
-            print("Failed to generate a session summary report without any active user.")
