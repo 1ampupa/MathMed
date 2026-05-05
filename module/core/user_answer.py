@@ -20,9 +20,9 @@ class UserAnswer:
             # Update difficulty every 5 quiz based on overall accuracy and recent performance
             if self.quiz.quiz_number % 5 == 0:
                 if (
-                    self.user.current_session.accuracy_percentage >= 
+                    self.user.accuracy_percentage >= 
                     DifficultyManager.MINIMUM_ACCURACY_PERCENTAGE_INCREASE
-                and (sum(self.user.current_session.five_recent_answer_results)) * 20 >= # * 20 to make it percentage
+                and (sum(self.user.five_recent_answer_results)) * 20 >= # * 20 to make it percentage
                     DifficultyManager.MINIMUM_ACCURACY_PERCENTAGE_INCREASE
                 ):
                     difficulty = self.user.update_difficulty(self.quiz.operator, True)
