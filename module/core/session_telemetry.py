@@ -29,7 +29,6 @@ class SessionTelemetry():
             if user.correct_streak > user.max_correct_streak: # Record max streak
                 user.max_correct_streak = user.correct_streak
         else:
-            user.points -= 1 # Base point for incorrect answer
             user.incorrect_answer += 1
 
             if user.correct_streak >= 5:
@@ -60,7 +59,8 @@ class SessionTelemetry():
                     f"Summary Report\n",
                     f"User: {user.name}\n",
                     f"You earned a total of {user.points} points!\n",
-                    f"Game mode: {session.readable_operator} ({session.operator.name})\n",
+                    f"Game mode: {session.game_mode}\n",
+                    f"Operator: {session.readable_operator} ({session.operator.name})",
                     f"Time elapsed: {user.time_elapsed:.1f} seconds\n\n",
                     f"Question answered: {user.readable_question_answered}\n",
                     f"Accuracy: {user.accuracy_percentage}% ({user.correct_answer}/{user.question_answered})\n",
@@ -74,7 +74,8 @@ class SessionTelemetry():
                     f"Summary Report for session {session.id}.\n",
                     f"User: {user.name} (user id: {user.id})\n",
                     f"Earned {user.points} points!\n",
-                    f"Game mode: {session.readable_operator} ({session.operator})\n",
+                    f"Game mode: {session.game_mode}\n",
+                    f"Operator: {session.readable_operator} ({session.operator})\n",
                     f"Time elapsed: {user.time_elapsed:.2f} seconds\n\n",
                     f"Question answered: {user.readable_question_answered}\n",
                     f"Question asked by the game: {session.all_question_answered}",

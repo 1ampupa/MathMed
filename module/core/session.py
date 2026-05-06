@@ -1,6 +1,7 @@
 import traceback
 from module.core.operators import Operators
-from module.core.state import State, StateManager
+from module.core.state import StateManager
+from module.core.game_modes import GameModes, GameModesIdentifier
 
 class Session:
     _session_id_counter = 1
@@ -12,8 +13,9 @@ class Session:
         self.readable_operator: str = Operators.readable()
 
         # Session Settings
-        self.max_active_users: int = 2
-        self.min_questions_for_report: int = 3
+        self.game_mode = GameModes(self, GameModesIdentifier.CHALLENGER_CASUAL)
+        self.game_mode.modify_custom(generate_summary_report=False)
+        self.game_mode.modify_custom(max_questions=5)
 
         # Session Telemetry
         self.all_question_answered: int = 0
@@ -25,8 +27,8 @@ class Session:
         from module.core.session_telemetry import SessionTelemetry
 
         # Generate report
-        if (self.all_question_answered >= self.min_questions_for_report
-            and user.question_answered >= self.min_questions_for_report):     
+        if (self.all_question_answered >= self.game_mode.min_questions_for_report
+            and user.question_answered >= self.game_mode.min_questions_for_report):     
             # Calculate Accuracy for each player
             user.average_time_per_question = user.time_elapsed / user.question_answered
             print("Generating your summary report...")
@@ -38,8 +40,8 @@ class Session:
     # Connection
 
     def connect_user(self, user) -> None:
-        if len(self.active_users) == self.max_active_users:
-            print(f"Can't connect {user.name} to the session (id: {self.id}); The session is full. (Max: {self.max_active_users})")
+        if len(self.active_users) == self.game_mode.max_active_users:
+            print(f"Can't connect {user.name} to the session (id: {self.id}); The session is full. (Max: {self.game_mode.max_active_users})")
             return     
         
         user.connect_session(self)
@@ -56,7 +58,8 @@ class Session:
 
     def end_session(self) -> None:
         for user in self.active_users:
-            self.summarise_user_performance(user)
+            if self.game_mode.generate_summary_report:
+                self.summarise_user_performance(user)
             if self.active_users is not None:
                 user.disconnect_session(self)
 
