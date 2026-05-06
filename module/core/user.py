@@ -22,7 +22,7 @@ class User:
         }
 
         # State
-        self.current_state = State.MAIN_MENU
+        self.current_state: State = State.MAIN_MENU
 
         # Session Telemetry
         self.question_answered: int = 0
@@ -48,6 +48,7 @@ class User:
     # Create user
     @classmethod
     def create(cls) -> User:
+        if StateManager.debug_mode: return cls("Test User")
         while True:
             # Get username
             name = input("Enter your name: ")

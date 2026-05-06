@@ -14,7 +14,6 @@ class Session:
 
         # Session Settings
         self.game_mode = GameModes(self, GameModesIdentifier.CHALLENGER_CASUAL)
-        self.game_mode.modify_custom(generate_summary_report=False)
         self.game_mode.modify_custom(max_questions=5)
 
         # Session Telemetry

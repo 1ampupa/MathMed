@@ -7,7 +7,8 @@ class State(Enum):
     USER_SETTINGS = auto()
     
 class StateManager():
-    debug_mode = False
+    debug_mode: bool = False
+    program_version: str = "v1.1.0"
 
     @staticmethod
     def change_state(user, state: State):
