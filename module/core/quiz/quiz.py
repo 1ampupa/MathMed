@@ -45,7 +45,10 @@ class Quiz():
             b = randint(min_value, max_value)
 
             # Check for repeating numbers in the list
-            if (a,b) in cls.recent_ten_operands_set:
+            if (
+                (a,b) in cls.recent_ten_operands_set
+                or (b,a) in cls.recent_ten_operands_set
+            ):
                 continue
 
             # Generate direct divisible question for division

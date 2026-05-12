@@ -31,11 +31,11 @@ class Session:
         user.connect_session(self)
 
         if StateManager.debug_mode:
-            print(f"Connecting {user.name} to the session... (id: {self.id})")
+            print(f"Connecting {user.id} to the session... (id: {self.id})")
         else:
             print(f"Connecting {user.name} to the session...")
 
-    def disconnect_user(self, user: User) -> None:
+    def disconnect_user(self, user: User, reason: str = "disconnected") -> None:
         if user.current_state != State.IN_SESSION:
             print("Currently not in any session.")
             return
@@ -44,30 +44,30 @@ class Session:
             print("There's no active user in this session.")
             return
         
-        if StateManager.debug_mode:
-            print(f"Disconnecting {user} from the session (id: {self.id}).")
-        else:
-            print(f"Disconnecting {user} from the session.")
-
-        self.disconnect_user(user)
-        self.active_users.remove(user)
-
-    def end_session(self) -> None:
+        # Session Telemetry
         from module.core.session.session_telemetry import SessionTelemetry
         # Calculate Accuracy
-        for user in self.active_users:
-            if user.question_answered != 0:
-                user.average_time_per_question = user.time_elapsed / user.question_answered
-                print("Generating your summary report...")
-                # Creating telemetry summary report
-                SessionTelemetry.summarise_telemetry(self, user)
-            else:
-                print("Session abandoned; No summary report generated.")
+        if user.question_answered != 0:
+            user.average_time_per_question = user.time_elapsed / user.question_answered
+            print("Generating your summary report...")
+            # Creating telemetry summary report
+            SessionTelemetry.summarise_telemetry(self, user)
+        else:
+            print("You have abandoned the game; No summary report generated.")
 
+        if StateManager.debug_mode:
+            print(f"Disconnecting {user.id} from the session (id: {self.id}) because {reason}.")
+        else:
+            print(f"Disconnecting {user.name} from the session because {reason}.")
+
+        user.disconnect_session()
+        self.active_users.remove(user)
+
+    def end_session(self, reason: str = "the session has ended") -> None:
         # Disconnect
         if self.active_users is not None:
             for user in self.active_users:
-                user.disconnect_session()
+                self.disconnect_user(user, reason=reason)
         
         if StateManager.debug_mode: print(f"Ended session (id: {self.id})")
 
@@ -94,12 +94,14 @@ class Session:
             try:
                 looping = SessionLoop.loop(self)
                 if not looping: break
+            except KeyboardInterrupt:
+                self.end_session("the process has terminated")
             except Exception as e:
                 if StateManager.debug_mode:
                     print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n")
                     traceback.print_exc()
                 else:
                     print(f"A fatal error occurred, and the session was ended unexpectedly with the following error message:\n{e}")
-                self.end_session()
+                self.end_session("an unexpected error")
                 input("Press Enter Button to return to main menu.")
                 break
