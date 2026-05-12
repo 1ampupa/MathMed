@@ -3,6 +3,7 @@ from random import randint, choice
 from module.core.utils.operators import Operators
 from module.core.utils.exceptions import QuizGenerationExceededLimit
 from module.core.utils.state import StateManager
+from module.core.session.session import Session
 from module.core.quiz.quiz_validator import QuizValidator
 from module.core.user.user import User
 
@@ -27,7 +28,7 @@ class Quiz():
     # Quiz Generator
 
     @classmethod
-    def generate(cls, user: User, operator: Operators) -> Quiz:
+    def generate(cls, session: Session, user: User, operator: Operators) -> Quiz:
         # Pop the first quiz's numbers set when the list reach 10
         if len(cls.recent_ten_operands_set) > 10:
             cls.recent_ten_operands_set.pop(0)
@@ -60,7 +61,7 @@ class Quiz():
                 b = divisor
 
             # Validate quiz
-            if QuizValidator.validate_quiz(a, b, operator):
+            if QuizValidator.validate_quiz(session.quiz_modifier, a, b, operator):
                 cls.recent_ten_operands_set.append((a,b))
                 return cls(a, b, operator)
 
@@ -90,12 +91,6 @@ class Quiz():
     def reset_session(cls) -> None:
         cls.quiz_number = 1
         cls.quizzes.clear()
-    
-    @staticmethod
-    def rollback_last_quiz() -> None:
-        if Quiz.quizzes:
-            Quiz.quizzes.pop()
-            Quiz.quiz_number = len(Quiz.quizzes) + 1
 
     def __str__(self) -> str:
         if StateManager.debug_mode:

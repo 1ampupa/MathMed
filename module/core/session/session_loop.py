@@ -16,18 +16,18 @@ class SessionLoop:
         
         # Generate Quiz
         for user in session.active_users:
-            while True:
-                # Generate question
-                quiz = Quiz.generate(user, session.operator)
+            # Generate question
+            quiz = Quiz.generate(session, user, session.operator)
 
+            # Start Quiz Timer
+            quiz_start_time = time.perf_counter()
+
+            while True:
                 # Ask question
                 if len(session.active_users) == 1:
                     print(quiz)
                 else:
                     print(f"This question goes to {user}!\n{quiz}")
-
-                # Start Quiz Timer
-                quiz_start_time = time.perf_counter()
 
                 # Receive User Answer
                 answer = input("Answer for world peace: ")
@@ -43,22 +43,17 @@ class SessionLoop:
                 # Check User Answer
                 try:
                     result = UserAnswer(user, quiz, int(answer))
+
+                    print(f"{result}! The answer is {result.quiz.answer}.\n")
+
+                    # Update difficulty and telemetry
+                    result.update_difficulty()
+                    SessionTelemetry.update_telemetry(session, user, result.is_correct, quiz_time_taken)
+
+                    break
                 except ValueError:
-                    print("Invalid input, please answer the question using only numbers.")
-                    Quiz.rollback_last_quiz() # Restart the quiz. aka. remove the old one out of the existance :sad:
-                    continue
-
-                print(f"{result}! The answer is {result.quiz.answer}.\n")
-
-                # Update difficulty and telemetry
-                result.update_difficulty()
-                SessionTelemetry.update_telemetry(session, user, result.is_correct, quiz_time_taken)
-
-                # Pop the last index of the five recent performance counter if its length reaches 5
-                if len(user.five_recent_answer_results) >= 5:
-                    user.five_recent_answer_results.pop(0)
-
-                break
+                    print("Invalid input, please answer the question using only numbers.\n")
+                    continue # restart the quiz (timer still continue)
 
         return True
     

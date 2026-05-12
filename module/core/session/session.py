@@ -2,6 +2,7 @@ import traceback
 from module.core.utils.operators import Operators
 from module.core.utils.state import State, StateManager
 from module.core.user.user import User
+from module.core.quiz.quiz_modifier import QuizModifier
 
 class Session:
     session_id_counter = 1
@@ -11,6 +12,9 @@ class Session:
         self.active_users: list[User] = []
         self.operator: Operators = Operators
         self.readable_operator: str = Operators.readable()
+        
+        # Module hook
+        self.quiz_modifier = QuizModifier()
 
         # Telemetry
         self.question_asked: int = 0

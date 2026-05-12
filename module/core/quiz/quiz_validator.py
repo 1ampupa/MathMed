@@ -3,27 +3,37 @@ from module.core.quiz.quiz_modifier import QuizModifier
 
 class QuizValidator:
 
-    @staticmethod
-    def validate_quiz(a: int, b: int, operators: Operators) -> bool:
+    @classmethod
+    def fetch(cls, rule: dict, key: str, default):
+        return rule.get(key, default)
+
+    @classmethod
+    def validate_quiz(cls, modifier: QuizModifier, a: int, b: int, operator: Operators) -> bool:
         # Visit 'quiz_modifier.py' for more information and detailed logic
-        match (operators):
-            case Operators.ADDITION:
-                if not QuizModifier.allow_duplicate_addends and a == b: return False
-                if not QuizModifier.allow_zero_addend and (a == 0 or b == 0): return False
-            case Operators.SUBTRACTION:
-                if not QuizModifier.allow_equal_subtraction and a == b: return False
-                if not QuizModifier.allow_negative_subtraction and b > a: return False
-                if not QuizModifier.allow_zero_subtrahend and b == 0: return False
-            case Operators.MULTIPLICATION:
-                if not QuizModifier.allow_square_multiplication and a == b: return False
-                if not QuizModifier.allow_zero_factor and (a == 0 or b == 0): return False
-                if not QuizModifier.allow_one_factor and (a == 1 or b == 1): return False
-            case Operators.DIVISION:
-                if b == 0: return False
-                if not QuizModifier.allow_dividend_equal_divisor and a == b: return False
-                if not QuizModifier.allow_zero_dividend and a == 0: return False
-                if not QuizModifier.allow_one_divisor and b == 1: return False
-            case _:
-                return False
+
+        # Fetch rules for the specific operator
+        rules: dict | None = modifier.rules.get(operator)
+        if rules is None: return False
+
+        # Addition
+        if not cls.fetch(rules, "allow_duplicate", True) and a == b: return False
+        if not cls.fetch(rules, "allow_zero", False) and (a == 0 or b == 0): return False
+
+        # Subtraction
+        if not cls.fetch(rules, "allow_equal", False) and a == b: return False
+        if not cls.fetch(rules, "allow_negative", False) and b > a: return False
+        if not cls.fetch(rules, "allow_zero", False) and b == 0: return False
+
+        # Multiplication
+        if not cls.fetch(rules, "allow_square", True) and a == b: return False
+        if not cls.fetch(rules, "allow_zero", False) and (a == 0 or b == 0): return False
+        if not cls.fetch(rules, "allow_one", False) and (a == 1 or b == 1): return False
+
+        # Division
+        if b == 0: return False # nah bro
+        if not cls.fetch(rules, "allow_equal", False) and a == b: return False
+        if not cls.fetch(rules, "allow_zero", False) and a == 0: return False
+        if not cls.fetch(rules, "allow_one", False) and b == 1: return False
+
         return True # If all conditions are passed; Quiz is able to generate
     

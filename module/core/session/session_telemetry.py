@@ -33,7 +33,7 @@ class SessionTelemetry():
 
             if user.correct_streak >= 5:
                 # Annouce end of streak if user has 5+ streak
-                print(f"{user.correct_streak} streaks has ended!\n")
+                print(f"Streak of {user.correct_streak} has ended!\n")
 
             user.correct_streak = 0
         

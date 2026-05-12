@@ -1,17 +1,30 @@
+from module.core.utils.operators import Operators
+
 class QuizModifier():
     
-    # Default Settings
-    allow_duplicate_addends = True         # a + a
-    allow_zero_addend = False              # a + 0 | 0 + a | 0 + 0
-    
-    allow_equal_subtraction = False        # a - a
-    allow_negative_subtraction = False     # a - b, b > a
-    allow_zero_subtrahend = False          # a - 0
-    
-    allow_square_multiplication = True     # a * a
-    allow_zero_factor = False              # a * 0 | 0 * a | 0 * 0
-    allow_one_factor = False               # a * 1 | 1 * a | 1 * 1
-    
-    allow_dividend_equal_divisor = False   # a / a
-    allow_zero_dividend = False            # 0 / a
-    allow_one_divisor = False              # a / 1
+    def __init__(self) -> None:
+        # Default Settings
+        self.rules: dict[Operators, dict] = self.use_default_settings()  
+
+    def use_default_settings(self) -> dict[Operators, dict]:
+        return {
+            Operators.ADDITION: {
+                "allow_duplicate": True,    # a + a
+                "allow_zero": False         # a + 0 | 0 + a | 0 + 0
+            },  
+            Operators.SUBTRACTION: {    
+                "allow_equal": False,       # a - a
+                "allow_negative": False,    # a - b, b > a
+                "allow_zero": False         # a - 0
+            },  
+            Operators.MULTIPLICATION: { 
+                "allow_square": True,       # a * a
+                "allow_zero": False,        # a * 0 | 0 * a | 0 * 0
+                "allow_one": False          # a * 1 | 1 * a | 1 * 1
+            },
+            Operators.DIVISION: {
+                "allow_equal": False,       # a / a
+                "allow_zero": False,        # 0 / a
+                "allow_one": False          # a / 1
+            }  
+        }

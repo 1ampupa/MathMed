@@ -20,9 +20,9 @@ class UserAnswer:
             # Update difficulty every 5 quiz based on overall accuracy and recent performance
             if self.quiz.quiz_number % 5 == 0:
                 if (
-                    self.user.current_session.accuracy_percentage >= 
+                    self.user.accuracy_percentage >= 
                     DifficultyManager.MINIMUM_ACCURACY_PERCENTAGE_INCREASE
-                and (sum(self.user.current_session.five_recent_answer_results)) * 20 >= # * 20 to make it percentage
+                and (sum(self.user.five_recent_answer_results)) * 20 >= # * 20 to make it percentage
                     DifficultyManager.MINIMUM_ACCURACY_PERCENTAGE_INCREASE
                 ):
                     difficulty = self.user.update_difficulty(self.quiz.operator, True)
@@ -30,6 +30,10 @@ class UserAnswer:
                 else:
                     difficulty = self.user.update_difficulty(self.quiz.operator, False)
                     print(f"Quiz difficulty is now decreased. Now {difficulty}/{DifficultyManager.HIGHEST_MAXIMUM[self.quiz.operator]}")
+            
+            # Pop the first index of the five recent performance counter if its length reaches 5
+            if len(self.user.five_recent_answer_results) >= 5:
+                self.user.five_recent_answer_results.pop(0)
     
     def __str__(self) -> str:
         return self.result
