@@ -52,11 +52,11 @@ class SessionLoop:
 
                 # Update difficulty and telemetry
                 result.update_difficulty()
-                SessionTelemetry.update_telemetry(session ,result.is_correct, quiz_time_taken)
+                SessionTelemetry.update_telemetry(session, user, result.is_correct, quiz_time_taken)
 
                 # Pop the last index of the five recent performance counter if its length reaches 5
-                if len(session.five_recent_answer_results) >= 5:
-                    session.five_recent_answer_results.pop(0)
+                if len(user.five_recent_answer_results) >= 5:
+                    user.five_recent_answer_results.pop(0)
 
                 break
 

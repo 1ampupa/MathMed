@@ -21,6 +21,18 @@ class User:
         # Session
         self.current_session = None
 
+        # Session telemetry
+        self.question_answered: int = 0
+        self.points: int = 0
+        self.correct_answer: int = 0
+        self.incorrect_answer: int = 0
+        self.correct_streak: int = 0
+        self.max_correct_streak: int = 0
+        self.accuracy_percentage: int = 0
+        self.time_elapsed: float = 0
+        self.average_time_per_question: float = 0
+        self.five_recent_answer_results: list = []
+
         # State
         self.current_state: State = State.IDLE
 
@@ -29,10 +41,12 @@ class User:
 
     # Create user
     @classmethod
-    def create(cls, name: str = "User") -> User:
+    def create(cls, name: str = "User", cli_mode: bool = False) -> User:
+        if StateManager.debug_mode: return cls("Test User")
         # Get username
         while True:
-            name = name or input("Enter your name: ")
+            if cli_mode:
+                name = input("Enter your name: ")
 
             # Check for taken username
             is_taken = any(
@@ -63,3 +77,24 @@ class User:
         if self.current_session is None: return
         self.current_session = None
         self.current_state = State.IDLE
+        self.clean_session_telemetry()
+
+    def clean_session_telemetry(self) -> None:
+        self.question_answered = 0
+        self.points = 0
+        self.correct_answer = 0
+        self.incorrect_answer = 0
+        self.correct_streak = 0
+        self.max_correct_streak = 0
+        self.accuracy_percentage = 0
+        self.time_elapsed = 0
+        self.average_time_per_question = 0
+        self.five_recent_answer_results = []
+
+    @property
+    def readable_question_answered(self) -> str:
+        if self.question_answered == 1:
+            return f'1 question'
+        else:
+            return f'{self.question_answered} questions'
+

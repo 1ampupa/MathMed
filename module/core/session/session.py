@@ -13,25 +13,9 @@ class Session:
         self.readable_operator: str = Operators.readable()
 
         # Telemetry
-        self.question_answered: int = 0
-        self.points: int = 0
-        self.correct_answer: int = 0
-        self.incorrect_answer: int = 0
-        self.correct_streak: int = 0
-        self.max_correct_streak: int = 0
-        self.accuracy_percentage: int = 0
-        self.time_elapsed: float = 0
-        self.average_time_per_question: float = 0
-        self.five_recent_answer_results: list = []
+        self.question_asked: int = 0
 
         Session.session_id_counter += 1
-
-    @property
-    def readable_question_answered(self) -> str:
-        if self.question_answered == 1:
-            return f'1 question'
-        else:
-            return f'{self.question_answered} questions'
 
     from module.core.user.user import User
     def connect_user(self, user: User) -> None:
@@ -72,8 +56,8 @@ class Session:
         from module.core.session.session_telemetry import SessionTelemetry
         # Calculate Accuracy
         for user in self.active_users:
-            if self.question_answered != 0:
-                self.average_time_per_question = self.time_elapsed / self.question_answered
+            if user.question_answered != 0:
+                user.average_time_per_question = user.time_elapsed / user.question_answered
                 print("Generating your summary report...")
                 # Creating telemetry summary report
                 SessionTelemetry.summarise_telemetry(self, user)
