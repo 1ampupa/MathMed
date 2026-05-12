@@ -42,16 +42,16 @@ class SessionTelemetry():
         if session.points < 0: session.points = 0
 
     @staticmethod
-    def summarise_telemetry(session: Session) -> None:
+    def summarise_telemetry(session: Session, user) -> None:
         if session is None:
             print("No session to generate a summary report.")
             return
-        if session.active_user is not None:
+        if user is not None:
             if not StateManager.debug_mode: # General result
                 print(
                     f"{"="*50}\n"
                     f"Summary Report\n",
-                    f"User: {session.active_user.name}\n",
+                    f"User: {user.name}\n",
                     f"You earned a total of {session.points} points!\n",
                     f"Game mode: {session.readable_operator} ({session.operator.name})\n",
                     f"Time elapsed: {session.time_elapsed:.1f} seconds\n\n",
@@ -65,7 +65,7 @@ class SessionTelemetry():
                 print(
                     f"{"="*50}\n"
                     f"Summary Report for session {session.id}.\n",
-                    f"User: {session.active_user.name} (user id: {session.active_user.id})\n",
+                    f"User: {user.name} (user id: {user.id})\n",
                     f"Earned {session.points} points!\n",
                     f"Game mode: {session.readable_operator} ({session.operator})\n",
                     f"Time elapsed: {session.time_elapsed:.2f} seconds\n\n",
