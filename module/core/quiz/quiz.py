@@ -1,9 +1,9 @@
 from random import randint, choice
 
-from module.core.operators import Operators
-from module.core.state import StateManager
-from module.core.quiz_validator import QuizValidator
-from module.core.user import User
+from module.core.utils.operators import Operators
+from module.core.utils.state import StateManager
+from module.core.quiz.quiz_validator import QuizValidator
+from module.core.user.user import User
 
 class Quiz():
 

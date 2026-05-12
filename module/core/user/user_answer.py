@@ -1,6 +1,6 @@
-from module.core.difficulty_manager import DifficultyManager
-from module.core.user import User
-from module.core.quiz import Quiz
+from module.core.utils.difficulty_manager import DifficultyManager
+from module.core.user.user import User
+from module.core.quiz.quiz import Quiz
 
 class UserAnswer:
     def __init__(self, user: User, quiz: Quiz, user_answer: int) -> None:

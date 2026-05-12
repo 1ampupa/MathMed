@@ -1,5 +1,5 @@
-from module.core.state import State, StateManager
-from module.core.session import Session
+from module.core.utils.state import State, StateManager
+from module.core.session.session import Session
 
 class SessionTelemetry():
     

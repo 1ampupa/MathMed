@@ -1,6 +1,6 @@
 import traceback
-from module.core.operators import Operators
-from module.core.state import State, StateManager
+from module.core.utils.operators import Operators
+from module.core.utils.state import State, StateManager
 
 class Session:
     session_id_counter = 1
@@ -50,7 +50,7 @@ class Session:
             print(f"Connecting {user.name} to the session...")
 
     def end_session(self) -> None:
-        from module.core.session_telemetry import SessionTelemetry
+        from module.core.session.session_telemetry import SessionTelemetry
 
         if StateManager.current_state != State.IN_SESSION:
             print("Currently not in any session.")
@@ -95,7 +95,7 @@ class Session:
         print("Answer the questions correctly.\nType 'q' to exit the game.")
 
         # Game loop
-        from module.core.session_loop import SessionLoop
+        from module.core.session.session_loop import SessionLoop
 
         while True:
             try:

@@ -1,8 +1,8 @@
-from module.core.operators import Operators
-from module.core.save_load import SaveLoad
-from module.core.difficulty_manager import DifficultyManager
-from module.core.state import StateManager
-from module.core.session import Session
+from module.core.utils.operators import Operators
+from module.core.utils.save_load import SaveLoad
+from module.core.utils.difficulty_manager import DifficultyManager
+from module.core.utils.state import StateManager
+from module.core.session.session import Session
 
 class User:
     users: list[User] = []

@@ -1,9 +1,9 @@
 import time
-from module.core.state import State, StateManager
-from module.core.session import Session
-from module.core.session_telemetry import SessionTelemetry
-from module.core.quiz import Quiz
-from module.core.user_answer import UserAnswer
+from module.core.utils.state import State, StateManager
+from module.core.session.session import Session
+from module.core.session.session_telemetry import SessionTelemetry
+from module.core.quiz.quiz import Quiz
+from module.core.user.user_answer import UserAnswer
 
 class SessionLoop:
 
