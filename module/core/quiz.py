@@ -10,7 +10,8 @@ class Quiz():
     # Quiz number and Quizzes (Reset on startup and every game session)
     quiz_number: int = 1
     quizzes: list = []
-    recent_ten_operands_set: set[tuple[int,int]] = set() # To prevent repeating question
+    recent_ten_operands_set: list[tuple[int,int]] = []
+    max_generation_attempt: int = 100
 
     def __init__(self, a: int, b: int, operator: Operators) -> None:
         self.quiz_number = Quiz.quiz_number
@@ -23,23 +24,27 @@ class Quiz():
         Quiz.quiz_number += 1
 
     # Quiz Generator
+
     @classmethod
     def generate(cls, user: User, operator: Operators) -> Quiz:
         # Pop the first quiz's numbers set when the list reach 10
         if len(cls.recent_ten_operands_set) > 10:
-            cls.recent_ten_operands_set.pop()
+            cls.recent_ten_operands_set.pop(0)
 
-        # Fetch max number to generate from user's difficulty chart
-        max_value = user.difficulty_chart[operator]
+        # Fetch the maximum number to generate from user's difficulty chart
+        max_value: int = user.difficulty_chart[operator]
 
         if max_value is None:
             raise ValueError(f"Max Value for {operator} cannot be NoneType. Please reset this user's difficulty chart.")
         
-        for _ in range(100): # 100 damn attempts so please work ty :D
-            a = randint(max(1, (max_value//3)), max_value)
-            b = randint(max(1, (max_value//3)), max_value)
+        # Set the minimum value from the 1/3 of maximum number else 1 as a fail-safe
+        min_value: int = max(1, max_value//3)
 
-            # Check for repeating numbers set
+        for _ in range(cls.max_generation_attempt): # 100 damn attempts so please work ty :D
+            a = randint(min_value, max_value)
+            b = randint(min_value, max_value)
+
+            # Check for repeating numbers in the list
             if (a,b) in cls.recent_ten_operands_set:
                 continue
 
@@ -52,7 +57,7 @@ class Quiz():
 
             # Validate quiz
             if QuizValidator.validate_quiz(a, b, operator):
-                cls.recent_ten_operands_set.add((a,b))
+                cls.recent_ten_operands_set.append((a,b))
                 return cls(a, b, operator)
 
         raise ValueError("No valid quiz generated under this condition. Please change your quiz settings or revert to default settings.")
@@ -77,10 +82,10 @@ class Quiz():
 
     # Helper Functions
 
-    @staticmethod
-    def reset_session() -> None:
-        Quiz.quiz_number = 1
-        Quiz.quizzes.clear()
+    @classmethod
+    def reset_session(cls) -> None:
+        cls.quiz_number = 1
+        cls.quizzes.clear()
     
     @staticmethod
     def rollback_last_quiz() -> None:
