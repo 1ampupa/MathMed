@@ -5,7 +5,7 @@ from module.core.user.user import User
 from module.core.session.session import Session
 
 # Debug Mode (Override here)
-StateManager.debug_mode = False
+StateManager.debug_mode = True
 
 SaveLoad.create_core_folders()
 

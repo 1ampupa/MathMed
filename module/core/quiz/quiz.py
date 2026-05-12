@@ -1,6 +1,7 @@
 from random import randint, choice
 
 from module.core.utils.operators import Operators
+from module.core.utils.exceptions import QuizGenerationExceededLimit
 from module.core.utils.state import StateManager
 from module.core.quiz.quiz_validator import QuizValidator
 from module.core.user.user import User
@@ -63,7 +64,7 @@ class Quiz():
                 cls.recent_ten_operands_set.append((a,b))
                 return cls(a, b, operator)
 
-        raise ValueError("No valid quiz generated under this condition. Please change your quiz settings or revert to default settings.")
+        raise QuizGenerationExceededLimit()
         
     # Getter Methods
 
