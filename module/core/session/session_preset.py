@@ -23,6 +23,9 @@ class SessionPreset(SessionSettings):
     def __init__(self, preset: SessionPresetIdentifier) -> None:
         super().__init__()
 
+        self.name = preset.value
+        self.description = preset.value # TODO Add an hardcoded description
+
         match (preset):
             case SessionPresetIdentifier.STANDARD:
                 self.endless_mode = False
@@ -105,5 +108,7 @@ class SessionPreset(SessionSettings):
                 self.endless_mode = False
                 self.timed_mode_enabled = False
                 self.health_mode_enabled = False
+            case SessionPresetIdentifier.CUSTOM:
+                pass
 
             case _: raise UnknownSessionPresetIdentifier()

@@ -1,6 +1,7 @@
 import traceback
 from module.core.utils.operators import Operators
 from module.core.utils.state import State, StateManager
+from module.core.session.session_preset import SessionPreset, SessionPresetIdentifier
 from module.core.user.user import User
 from module.core.quiz.quiz_modifier import QuizModifier
 
@@ -12,12 +13,14 @@ class Session:
         self.active_users: list[User] = []
         self.operator: Operators = Operators
         self.readable_operator: str = Operators.readable()
-        
+
         # Module hook
         self.quiz_modifier = QuizModifier()
-
+        self.preset = SessionPreset(SessionPresetIdentifier.STANDARD)
+        
         # Telemetry
         self.question_asked: int = 0
+        self.minimum_answer_for_report: int = min(3, self.preset.max_questions_per_player)
 
         Session.session_id_counter += 1
 
@@ -62,7 +65,7 @@ class Session:
         if StateManager.debug_mode:
             print(f"Disconnecting {user.id} from the session (id: {self.id}) because {reason}.")
         else:
-            print(f"Disconnecting {user.name} from the session because {reason}.")
+            print(f"Disconnecting {user.name} from the session.")
 
         user.disconnect_session()
         self.active_users.remove(user)
@@ -89,6 +92,7 @@ class Session:
             print("Cannot start a session without any user.")
             return
 
+        if StateManager.debug_mode: print("Starting the session in debug mode.")
         print("Answer the questions correctly.\nType 'q' to exit the game.")
 
         # Game loop
