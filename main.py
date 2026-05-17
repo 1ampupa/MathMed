@@ -13,6 +13,6 @@ user = User.create(cli_mode=True)
 
 print(f"Hi, {user.name}!")
 
-session = Session(Operators.MULTIPLICATION)
+session = Session(Operators.ADDITION)
 session.connect_user(user)
 session.start()

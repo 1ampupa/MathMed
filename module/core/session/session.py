@@ -17,7 +17,7 @@ class Session:
         # Module hook
         self.quiz_modifier = QuizModifier()
         self.preset = SessionPreset(SessionPresetIdentifier.STANDARD)
-        
+
         # Telemetry
         self.question_asked: int = 0
         self.minimum_answer_for_report: int = min(3, self.preset.max_questions_per_player)
@@ -54,7 +54,7 @@ class Session:
         # Session Telemetry
         from module.core.session.session_telemetry import SessionTelemetry
         # Calculate Accuracy
-        if user.question_answered != 0:
+        if user.question_answered >= self.minimum_answer_for_report:
             user.average_time_per_question = user.time_elapsed / user.question_answered
             print("Generating your summary report...")
             # Creating telemetry summary report
